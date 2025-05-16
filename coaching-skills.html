@@ -686,7 +686,23 @@
                 if(isMetaphor){questionText=`Metaphor #${questionId.substring(1)}`;}else{const h3=questionContainer.querySelector('h3');const p_strong=field.previousElementSibling;if(h3){questionText=h3.textContent.replace('*','').trim();}else if(p_strong&&p_strong.tagName==='P'&&p_strong.querySelector('strong')){questionText=p_strong.textContent.trim();}}
 
                 const submissionTime = new Date().toISOString();
-                const userProgressPayload = { user_id:currentUser.id,email:currentUser.email,question_id:questionId,question_text:questionText,answer:answer,page:PAGE_NAME,status:'completed',submitted_at:submissionTime,updated_at:submissionTime,section_type:'article',section_id:SECTION_ID,section_title:document.title||'Coaching Skills',progress_percentage:100,score:null,is_passed:null};
+                const userProgressPayload = {
+                    user_id:currentUser.id,
+                    email:currentUser.email,
+                    question_id:questionId,
+                    question_text:questionText,
+                    answer:answer,
+                    page:PAGE_NAME,
+                    status:'completed',
+                    submitted_at:submissionTime,
+                    updated_at:submissionTime,
+                    section_type:'article',
+                    section_id:SECTION_ID,
+                    section_title:document.title||'Coaching Skills',
+                    progress_percentage:100,
+                    score: 0, // MODIFIED: Changed from null to 0
+                    is_passed:null
+                };
 
                 console.log("Attempting to upsert to user_progress:", userProgressPayload);
                 const { data, error } = await supabase.from('user_progress').upsert([userProgressPayload], { onConflict: ['user_id', 'question_id'] }).select();
