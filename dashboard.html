@@ -682,7 +682,7 @@
 
                 // --- START: MODIFIED ADMIN LOGIC ---
                 const dbAdminStatus = await fetchAdminStatus(currentUser.id);
-                isAdmin = (currentUser.email === "m.elsayed@thechefz.co") || dbAdminStatus;
+                isAdmin = dbAdminStatus;
                 console.log(`User: ${currentUser.email}, DB isAdmin: ${dbAdminStatus}, Final isAdmin: ${isAdmin}`);
                 // --- END: MODIFIED ADMIN LOGIC ---
 
