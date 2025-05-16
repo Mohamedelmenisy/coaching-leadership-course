@@ -564,7 +564,23 @@
                 const questionText = h3 ? h3.textContent.replace('*','').trim() : 'Unknown Question Text';
                 const submissionTime = new Date().toISOString();
 
-                const userProgressPayload = { user_id: currentUser.id, email: currentUser.email, question_id: questionId, question_text: questionText, answer: answer, page: PAGE_NAME, status: 'completed', submitted_at: submissionTime, updated_at: submissionTime, section_type: 'article', section_id: SECTION_ID, section_title: document.title || 'Introduction to Coaching & Leadership', progress_percentage: 100, score: null, is_passed: true /* Mark intro as passed */ };
+                const userProgressPayload = {
+                    user_id: currentUser.id,
+                    email: currentUser.email,
+                    question_id: questionId,
+                    question_text: questionText,
+                    answer: answer,
+                    page: PAGE_NAME,
+                    status: 'completed',
+                    submitted_at: submissionTime,
+                    updated_at: submissionTime,
+                    section_type: 'article',
+                    section_id: SECTION_ID,
+                    section_title: document.title || 'Introduction to Coaching & Leadership',
+                    progress_percentage: 100,
+                    score: 0, // MODIFIED: Changed from null to 0
+                    is_passed: true /* Mark intro as passed */
+                };
 
                 console.log("Attempting to upsert to user_progress:", userProgressPayload);
                 const { data, error } = await supabase.from('user_progress').upsert([userProgressPayload], { onConflict: ['user_id', 'question_id'] }).select();
