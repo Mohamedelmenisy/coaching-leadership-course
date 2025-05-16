@@ -377,7 +377,7 @@
 
         // --- Configuration ---
         const localStorageKey = 'allUserAnswers_teamCoaching';
-        const SECTION_ID = 'team';
+        const SECTION_ID = 'team'; // Page-level section ID
         const PAGE_NAME = 'coaching-team.html';
         const REQUIRED_TEAM_ROLES_ROWS = 3;
         const REQUIRED_TEAM_CHARTER_ROWS = 1;
@@ -809,7 +809,7 @@
             if (!supabase) { alert('Database connection error.'); return; }
             const currentUser = getCurrentUser(); if (!currentUser?.email || !currentUser.id) { alert('Session expired.'); return; }
             const field = document.querySelector(`[data-question="${questionId}"]`);
-             if (!field) { console.error(`Field not found for data-question="${questionId}"`); return; } // Added check
+             if (!field) { console.error(`Field not found for data-question="${questionId}"`); return; } 
             const questionContainer = field?.closest('.question-item');
             const errorId = `error-${questionId}`; const statusId = `save-status-${questionId}`;
             const statusElement = document.getElementById(statusId);
@@ -822,7 +822,7 @@
             const answer = field.value; const trimmedAnswer = answer.trim(); const isRequired = field.classList.contains('required-answer');
             hideMessages(errorId, field); if (statusElement) statusElement.style.display = 'none';
             if (isRequired && trimmedAnswer === '') {
-                showError(errorId, field, 'Required field cannot be empty.'); // More specific error
+                showError(errorId, field, 'Required field cannot be empty.'); 
                 updateStickyProgressBar(); return;
             }
 
@@ -832,80 +832,87 @@
                 const qTextElement = questionContainer.querySelector('.question-text');
                 const questionText = qTextElement ? qTextElement.textContent.replace('*','').trim() : 'Unknown Question Text';
                 const submissionTime = new Date().toISOString();
-                // Ensure progress_percentage reflects actual completion state if needed, here assuming 100 on save
-                const userProgressPayload = { user_id: currentUser.id, email: currentUser.email, question_id: questionId, question_text: questionText, answer: answer, page: PAGE_NAME, status: 'completed', submitted_at: submissionTime, updated_at: submissionTime, section_type: 'article', section_id: SECTION_ID, section_title: document.title || 'Team Coaching', progress_percentage: 100, score: null, is_passed: null };
+                
+                const currentSectionType = 'article'; // All standalone textareas are 'article'
+                let score = 0; // Default for essay/textual
+                let is_passed = (trimmedAnswer.length >= 25) ? true : null;
 
-                console.log("Upserting to user_progress:", userProgressPayload);
+                const userProgressPayload = { 
+                    user_id: currentUser.id, 
+                    email: currentUser.email, 
+                    question_id: questionId, 
+                    question_text: questionText, 
+                    answer: answer, 
+                    page: PAGE_NAME, 
+                    status: 'completed', 
+                    submitted_at: submissionTime, 
+                    updated_at: submissionTime, 
+                    section_type: currentSectionType, 
+                    section_id: SECTION_ID, // Page-level section ID
+                    section_title: document.title || 'Team Coaching', 
+                    progress_percentage: 100, 
+                    score: score, 
+                    is_passed: is_passed 
+                };
+
+                console.log("User Progress Payload (saveAnswer):", userProgressPayload);
                 const { data, error } = await supabase.from('user_progress').upsert([userProgressPayload], { onConflict: ['user_id', 'question_id'] }).select();
                 if (error) throw new Error(`Supabase error: ${error.message}`); console.log("Supabase upsert successful:", data);
 
-                // Save locally BEFORE disabling UI for robustness
                 if (!saveAnswerToStorage(currentUser.email, questionId, answer)) {
                      console.warn("Local storage save failed after Supabase success for", questionId);
-                     // Decide how to handle this - maybe alert user? For now, just log.
                 }
 
                 field.disabled = true; field.classList.remove('required-field');
                 buttonGroup.style.display = 'none';
                 if (statusElement) { statusElement.textContent = 'Saved ✅'; statusElement.style.display = 'inline-block'; }
-
-                updateStickyProgressBar(); // Update progress after successful save
+                updateStickyProgressBar();
 
             } catch (error) {
                 console.error(`Failed to save ${questionId}:`, error);
                 showError(errorId, field, `Save failed. Try again.`);
-                // Re-enable buttons only if save failed
                 buttonGroup.style.display = 'flex';
                 if(saveButton) { saveButton.disabled = false; saveButton.textContent = 'Save'; }
                 if(deleteButton) { deleteButton.disabled = false; deleteButton.style.display = 'inline-block';}
-                field.disabled = false; // Ensure field is re-enabled on error
+                field.disabled = false; 
                 if (statusElement) statusElement.style.display = 'none';
-                // Do not update progress bar on failure
             }
         };
 
         window.deleteAnswer = function(questionId) {
              const field = document.querySelector(`[data-question="${questionId}"]`);
-              if (!field) { console.error(`Field not found for data-question="${questionId}"`); return; } // Added check
+              if (!field) { console.error(`Field not found for data-question="${questionId}"`); return; } 
 
-             // Check if the field is currently disabled (meaning it's saved)
              if (field.disabled) {
-                 console.warn(`Cannot delete saved answer: ${questionId}. Use editing feature if implemented, or contact support.`);
+                 console.warn(`Cannot delete saved answer: ${questionId}.`);
                  const errorId = `error-${questionId}`;
                  const statusId = `save-status-${questionId}`;
                  const statusElement = document.getElementById(statusId);
-                 // Show temporary message near status or error span
                  if (statusElement && statusElement.style.display !== 'none') {
                       statusElement.textContent = 'Cannot delete saved answer.';
                       statusElement.style.color = '#e74c3c';
                       setTimeout(() => {
-                           statusElement.textContent = 'Saved ✅'; // Revert after a few seconds
+                           statusElement.textContent = 'Saved ✅'; 
                            statusElement.style.color = '#27ae60';
                       }, 3000);
                  } else {
                       showError(errorId, null, "Saved answers cannot be deleted.");
                       setTimeout(() => hideError(errorId), 3000);
                  }
-                 return; // Prevent deletion of saved data
+                 return; 
              }
 
-             // If not disabled, proceed with clearing the unsaved value
              const currentUser = getCurrentUser(); if (!currentUser?.email) return;
              const errorId = `error-${questionId}`; const statusId = `save-status-${questionId}`; const statusElement = document.getElementById(statusId);
              hideMessages(errorId, field);
-             field.value = ''; // Clear the input field
+             field.value = ''; 
              if(statusElement) statusElement.style.display = 'none';
-
-             // No need to call deleteAnswerFromStorage for unsaved data
              console.log("Cleared unsaved answer locally for", questionId);
-
-             field.classList.remove('required-field'); // Remove error styling if present
-             updateStickyProgressBar(); // Recalculate progress as field is now empty
-
-             // Ensure buttons are visible/enabled for the now empty field
+             field.classList.remove('required-field'); 
+             updateStickyProgressBar(); 
              const buttonGroup = field.closest('.question-item')?.querySelector('.answer-buttons');
              if(buttonGroup){
-                 buttonGroup.style.display = 'flex'; // Make sure buttons are shown
+                 buttonGroup.style.display = 'flex'; 
                  const saveButton = buttonGroup.querySelector('.save-btn');
                  const deleteButton = buttonGroup.querySelector('.delete-btn');
                  if(saveButton) saveButton.disabled = false;
@@ -915,7 +922,7 @@
 
 
         // --- Actions (Save, Delete for Table Rows) ---
-        window.saveTableRow = async function(rowId) { // e.g., roles-row-1 or charter-row-1
+        window.saveTableRow = async function(rowId) { 
              if (!supabase) { alert('Database connection error.'); return; }
              const currentUser = getCurrentUser(); if (!currentUser?.email || !currentUser.id) { alert('Session expired.'); return; }
 
@@ -926,16 +933,14 @@
              const buttonGroup = rowElement.querySelector('.answer-buttons');
              const saveButton = buttonGroup?.querySelector('.save-btn');
              const deleteButton = buttonGroup?.querySelector('.delete-btn');
-             const statusElement = document.getElementById(`save-status-${rowId}`); // Row specific status
-             const inputs = Array.from(rowElement.querySelectorAll('.editable-answer')); // Use Array
+             const statusElement = document.getElementById(`save-status-${rowId}`); 
+             const inputs = Array.from(rowElement.querySelectorAll('.editable-answer')); 
 
              if (!inputs.length || !saveButton || !deleteButton) { console.error('Elements missing in row:', rowId); return; }
 
-             // Check if ANY input is disabled (quick check for already saved state)
              let alreadySaved = inputs.some(input => input.disabled);
              if (alreadySaved) {
                  console.warn('Row appears already saved (input disabled):', rowId);
-                 // Optional: Add UI feedback like flashing status
                  return;
              }
 
@@ -943,85 +948,109 @@
              if (statusElement) statusElement.style.display = 'none';
 
              let rowValid = true; let rowStarted = false; let firstEmptyRequiredField = null;
-             const rowData = {}; const tableType = rowId.startsWith('roles') ? 'Team Roles' : 'Team Charter'; const rowNum = rowId.match(/(\d+)$/)[1];
-             const questionTexts = {}; // For payload
+             const rowData = {}; 
+             const isRolesTable = rowId.startsWith('roles');
+             const tableIdentifier = isRolesTable ? 'Team Roles' : 'Team Charter';
+             const tableSectionId = isRolesTable ? 'team-roles-table' : 'team-charter-table';
+             const tableSectionTitle = isRolesTable ? document.querySelector('#teamRolesCard h3').textContent.replace('ACTION: ','').replace('*','').trim() : document.querySelector('#teamCharterCard h3').textContent.replace('ACTION: ','').replace('*','').trim();
+
+             const rowNum = rowId.match(/(\d+)$/)[1];
+             const questionTexts = {}; 
 
              inputs.forEach(field => {
                  const fieldId = field.id; const value = field.value; const trimmedValue = value.trim();
-                 rowData[fieldId] = value; // Store original value for saving
+                 rowData[fieldId] = value; 
                  const label = field.closest('td')?.dataset.label;
-                 questionTexts[fieldId] = `${tableType} - ${label || fieldId.replace(/\d+/,'')} (Row ${rowNum})`; // Generate question text
+                 questionTexts[fieldId] = `${tableIdentifier} - ${label || fieldId.replace(/\d+/,'')} (Row ${rowNum})`;
 
                  if (trimmedValue !== '') rowStarted = true;
-
-                 // Field is required *if* the row has been started
                  if (rowStarted && trimmedValue === '') {
                       rowValid = false; field.classList.add('required-field');
                       if (!firstEmptyRequiredField) firstEmptyRequiredField = field;
                  }
              });
 
-             // Don't save if the row wasn't started at all (all fields blank)
              if (!rowStarted) {
-                  hideError(errorId); // Ensure no previous error lingers
+                  hideError(errorId); 
                   console.log("Save aborted: Row not started (all fields blank).", rowId);
                   return;
              }
-
-             // If row was started but is invalid (missing fields)
              if (!rowValid) {
                   showError(errorId, null, 'Please fill all fields in this row.');
                   if (firstEmptyRequiredField) setTimeout(()=>firstEmptyRequiredField.focus({preventScroll:true}),100);
-                  updateStickyProgressBar(); // Update progress based on current valid state
+                  updateStickyProgressBar(); 
                   console.log("Save aborted: Row started but incomplete.", rowId);
                   return;
              }
 
-             // Proceed with saving
              saveButton.disabled = true; saveButton.textContent = 'Saving...'; deleteButton.disabled = true;
 
              try {
                   const submissionTime = new Date().toISOString();
                   const payloads = [];
-                  let localSaveSuccess = true; // Track local storage saves
+                  let localSaveSuccess = true; 
 
                   for (const fieldId in rowData) {
-                      payloads.push({ user_id: currentUser.id, email: currentUser.email, question_id: fieldId, question_text: questionTexts[fieldId], answer: rowData[fieldId], page: PAGE_NAME, status: 'completed', submitted_at: submissionTime, updated_at: submissionTime, section_type: 'article', section_id: SECTION_ID, section_title: document.title || 'Team Coaching', progress_percentage: 100, score: null, is_passed: null });
-                      // Save each field to local storage BEFORE Supabase call
-                      if (!saveAnswerToStorage(currentUser.email, fieldId, rowData[fieldId])) {
+                      const field = document.getElementById(fieldId); // Get the field element
+                      const answerValue = rowData[fieldId];
+                      const trimmedAnswerValue = answerValue.trim();
+                      
+                      let score_for_field = 0;
+                      let is_passed_for_field = null;
+                      const field_section_type = 'table_row'; // Explicitly table_row
+
+                      if (field.tagName === 'TEXTAREA' || field.type === 'text') {
+                          is_passed_for_field = (trimmedAnswerValue.length >= 25) ? true : null;
+                      } else if (field.tagName === 'SELECT') {
+                          is_passed_for_field = (trimmedAnswerValue !== '') ? true : null;
+                      }
+                      
+                      const payload = { 
+                          user_id: currentUser.id, 
+                          email: currentUser.email, 
+                          question_id: fieldId, 
+                          question_text: questionTexts[fieldId], 
+                          answer: answerValue, 
+                          page: PAGE_NAME, 
+                          status: 'completed', 
+                          submitted_at: submissionTime, 
+                          updated_at: submissionTime, 
+                          section_type: field_section_type, 
+                          section_id: tableSectionId, 
+                          section_title: tableSectionTitle, 
+                          progress_percentage: 100, 
+                          score: score_for_field, 
+                          is_passed: is_passed_for_field 
+                      };
+                      payloads.push(payload);
+                      console.log("User Progress Payload (saveTableRow - Field: " + fieldId + "):", payload);
+
+                      if (!saveAnswerToStorage(currentUser.email, fieldId, answerValue)) {
                            localSaveSuccess = false;
                            console.error("Local storage save FAILED for field:", fieldId);
-                           // Decide if you want to stop the whole process here or just warn
                       }
                   }
 
-                  // Optional: Check localSaveSuccess before proceeding?
                   if (!localSaveSuccess) {
-                       // Maybe alert the user or throw an error to prevent Supabase save?
-                       // throw new Error("Failed to save row data locally.");
                        console.warn("Continuing Supabase save despite local storage errors for row:", rowId);
                   }
 
-                  console.log(`Upserting ${payloads.length} records for row ${rowId}:`, payloads);
                   const { data, error } = await supabase.from('user_progress').upsert(payloads, { onConflict: ['user_id', 'question_id'] }).select();
                   if (error) throw new Error(`Supabase error: ${error.message}`); console.log("Supabase row upsert successful:", data);
 
-                  // Update UI only after successful Supabase save
-                  inputs.forEach(input => { input.disabled = true; input.classList.remove('required-field'); }); // Disable all inputs & clear errors
-                  buttonGroup.style.display = 'none'; // Hide button group
-                  if (statusElement) { statusElement.textContent = 'Row Saved ✅'; statusElement.style.display = 'inline-block'; } // Show status
-                  updateStickyProgressBar(); // Update overall progress
+                  inputs.forEach(input => { input.disabled = true; input.classList.remove('required-field'); }); 
+                  buttonGroup.style.display = 'none'; 
+                  if (statusElement) { statusElement.textContent = 'Row Saved ✅'; statusElement.style.display = 'inline-block'; } 
+                  updateStickyProgressBar(); 
 
               } catch(error) {
                   console.error(`Failed to save row ${rowId}:`, error);
                   showError(errorId, null, `Save failed. Try again.`);
-                  // Re-enable UI elements on failure
                   buttonGroup.style.display = 'flex';
                   saveButton.disabled = false; saveButton.textContent = 'Save Row';
                   deleteButton.disabled = false; deleteButton.style.display = 'inline-block';
-                  inputs.forEach(input => input.disabled = false); // Re-enable fields
+                  inputs.forEach(input => input.disabled = false); 
                   if (statusElement) statusElement.style.display = 'none';
-                  // Do not update progress on failure
               }
          }
 
@@ -1032,48 +1061,43 @@
              const statusId = `save-status-${rowId}`;
              const statusElement = document.getElementById(statusId);
 
-             // Check if ANY input is disabled (indicates saved state)
              let isSaved = inputs.some(input => input.disabled);
 
              if (isSaved) {
                  console.warn("Cannot delete saved row:", rowId);
-                 // Provide feedback to the user
-                 if (statusElement && statusElement.style.display !== 'none') { // If status is visible
+                 if (statusElement && statusElement.style.display !== 'none') { 
                       statusElement.textContent = 'Cannot delete saved row.';
                       statusElement.style.color = '#e74c3c';
                       setTimeout(() => {
-                           statusElement.textContent = 'Row Saved ✅'; // Revert status text
-                           statusElement.style.color = '#27ae60'; // Revert color
+                           statusElement.textContent = 'Row Saved ✅'; 
+                           statusElement.style.color = '#27ae60'; 
                       }, 3000);
-                 } else { // Otherwise, show error span briefly
+                 } else { 
                       showError(errorId, null, "Saved rows cannot be deleted.");
                       setTimeout(() => hideError(errorId), 3000);
                  }
-                 return; // Stop the function
+                 return; 
              }
 
-             // If not saved, proceed to clear the fields
-             const currentUser = getCurrentUser(); if (!currentUser?.email) return; // Should not happen if row isn't saved, but check anyway
-             hideMessages(errorId, null); // Hide errors
-             if(statusElement) statusElement.style.display = 'none'; // Hide status
+             const currentUser = getCurrentUser(); if (!currentUser?.email) return; 
+             hideMessages(errorId, null); 
+             if(statusElement) statusElement.style.display = 'none'; 
 
              inputs.forEach(input => {
-                  input.value = (input.tagName === 'SELECT') ? '' : ''; // Clear value
-                  input.classList.remove('required-field'); // Remove error class
-                  // No need to delete from storage as it wasn't saved
+                  input.value = (input.tagName === 'SELECT') ? '' : ''; 
+                  input.classList.remove('required-field'); 
              });
              console.log("Cleared unsaved answer locally for row", rowId);
 
-             updateStickyProgressBar(); // Update progress as row is now empty
+             updateStickyProgressBar(); 
 
-             // Ensure buttons are visible/enabled for the now empty row
              const buttonGroup = rowElement.querySelector('.answer-buttons');
              if(buttonGroup) {
                  buttonGroup.style.display = 'flex';
                  const saveButton = buttonGroup.querySelector('.save-btn');
                  const deleteButton = buttonGroup.querySelector('.delete-btn');
-                 if(saveButton) saveButton.disabled = false; // Ensure save is enabled
-                 if(deleteButton) deleteButton.disabled = false; // Ensure delete is enabled
+                 if(saveButton) saveButton.disabled = false; 
+                 if(deleteButton) deleteButton.disabled = false; 
              }
          }
 
@@ -1129,34 +1153,27 @@
              const userAnswers = allAnswers[currentUser.email] || {};
 
              let completedRowCount = 0;
-             const maxRows = (tableType === 'teamRoles') ? 5 : 5;
+             const maxRows = (tableType === 'teamRoles') ? 5 : 5; // Max 5 rows for both tables on this page
              const prefixes = (tableType === 'teamRoles') ? ['member', 'role', 'strengths'] : ['name', 'responsibility', 'priority', 'outcome'];
 
              for (let i = 1; i <= maxRows; i++) {
-                 let rowIsCompleteAndSaved = true; // Assume complete until a field is missing/empty
-                 let rowWasStarted = false; // Track if any field in the row has data
+                 let rowIsCompleteAndSaved = true; 
+                 let rowWasStarted = false; 
 
                  for (const prefix of prefixes) {
                       const fieldId = `${prefix}${i}`;
-                      const savedValue = userAnswers[fieldId]; // Get value from user's answers
+                      const savedValue = userAnswers[fieldId]; 
 
-                      // Check if the field exists in storage AND has a non-empty trimmed value
                       if (savedValue !== undefined && savedValue !== null && String(savedValue).trim() !== '') {
-                           rowWasStarted = true; // Found data, so the row was started/saved
+                           rowWasStarted = true; 
                       } else {
-                           // If the field is missing or empty, the row is not complete
                            rowIsCompleteAndSaved = false;
-                           // If we only care about *started* rows being complete, we might break here
-                           // But for progress, we need to know if *enough* fully complete rows exist.
-                           // So, continue checking other fields to see if the row was started at all.
                       }
                  }
-                  // Count the row only if it was started/saved AND all its fields were complete
                  if (rowWasStarted && rowIsCompleteAndSaved) {
                      completedRowCount++;
                  }
              }
-             // Return true if the number of fully completed rows meets the requirement
              const requirementMet = completedRowCount >= requiredRowCount;
               console.log(`Table Completion Check (${tableType}): ${completedRowCount}/${requiredRowCount} rows complete. Requirement met: ${requirementMet}`);
              return requirementMet;
