@@ -567,10 +567,9 @@
                            }
                       }
                       // If no specific empty row found to highlight, show general warning
-                      if (!firstInvalidField) {
+                      if (!firstInvalidField && allValid) { // Only show table general warning if other fields are valid
                            showGeneralWarningMessage(`Please complete at least ${REQUIRED_TABLE_ROWS} rows in the Coaching Map table.`);
-                           // Optionally focus the first input in the table
-                           const firstTableInput = document.querySelector('.skill-will-table .editable-answer');
+                           const firstTableInput = document.querySelector('.skill-will-table .editable-answer:not(:disabled)');
                            if (firstTableInput && !firstInvalidField) firstInvalidField = firstTableInput;
                       }
                   }
@@ -601,7 +600,7 @@
             const currentUser = getCurrentUser(); if (!currentUser?.email || !currentUser.id) { alert('Session expired.'); return; }
 
             const field = document.querySelector(`[data-question="${questionId}"]`);
-            const questionContainer = field?.closest('.question-item'); // Container is question-item
+            const questionContainer = field?.closest('.question-item');
             const errorId = `error-${questionId}`;
             const statusId = `save-status-${questionId}`;
             const statusElement = document.getElementById(statusId);
@@ -612,11 +611,12 @@
             if (!field || !questionContainer || !buttonGroup || !saveButton || !deleteButton) { console.error("Save Error: Elements missing for", questionId); return; }
             if (field.disabled) { console.warn("Attempted save on disabled field:", questionId); return; }
 
-            const answer = field.value; const trimmedAnswer = answer.trim();
+            const answer = field.value; 
+            const trimmedAnswer = answer.trim();
             const isRequired = field.classList.contains('required-answer');
 
-            hideError(errorId); // Clear previous error
-            if (statusElement) statusElement.style.display = 'none'; // Hide status initially
+            hideError(errorId); 
+            if (statusElement) statusElement.style.display = 'none'; 
 
             if (isRequired && trimmedAnswer === '') { showError(errorId, field); updateStickyProgressBar(); return; }
 
@@ -626,32 +626,48 @@
                 const qTextElement = questionContainer.querySelector('.question-text');
                 const questionText = qTextElement ? qTextElement.textContent.replace('*','').trim() : 'Unknown Question Text';
                 const submissionTime = new Date().toISOString();
-                const userProgressPayload = { user_id: currentUser.id, email: currentUser.email, question_id: questionId, question_text: questionText, answer: answer, page: PAGE_NAME, status: 'completed', submitted_at: submissionTime, updated_at: submissionTime, section_type: 'article', section_id: SECTION_ID, section_title: document.title || 'Coaching Individuals', progress_percentage: 100, score: null, is_passed: null };
+                const sectionType = 'article'; // For standard text questions
 
-                console.log("Upserting to user_progress:", userProgressPayload);
+                const userProgressPayload = { 
+                    user_id: currentUser.id, email: currentUser.email, question_id: questionId, 
+                    question_text: questionText, answer: answer, page: PAGE_NAME, 
+                    status: 'completed', submitted_at: submissionTime, updated_at: submissionTime, 
+                    section_type: sectionType, 
+                    section_id: SECTION_ID, 
+                    section_title: document.title || 'Coaching Individuals', 
+                    progress_percentage: 100, // Number
+                    score: 0, // Number
+                    is_passed: (sectionType === 'article' && trimmedAnswer.length >= 25) ? true : null // Boolean or null
+                };
+                
+                console.log('Payload for standard question to Supabase:', userProgressPayload); // Diagnostic log
+
                 const { data, error } = await supabase.from('user_progress').upsert([userProgressPayload], { onConflict: ['user_id', 'question_id'] }).select();
-                if (error) throw new Error(`Supabase error: ${error.message}`);
-                console.log("Supabase upsert successful:", data);
+                if (error) {
+                    console.error('Supabase upsert error for standard question:', error);
+                    throw new Error(`Supabase error: ${error.message}`);
+                }
+                console.log("Supabase upsert successful for standard question:", data);
 
                 field.disabled = true; field.classList.remove('required-field');
-                buttonGroup.style.display = 'none'; // Hide buttons
-                if (statusElement) { statusElement.textContent = 'Saved ✅'; statusElement.style.display = 'inline-block'; } // Show status
+                buttonGroup.style.display = 'none'; 
+                if (statusElement) { statusElement.textContent = 'Saved ✅'; statusElement.style.display = 'inline-block'; } 
                 saveAnswerToStorage(currentUser.email, questionId, answer);
-                updateStickyProgressBar(); // Update progress
+                updateStickyProgressBar(); 
 
             } catch (error) {
-                console.error(`Failed to save ${questionId}:`, error);
-                showError(errorId, field, `Save failed. Try again.`);
-                buttonGroup.style.display = 'flex'; // Show buttons on error
+                // Error already logged
+                showError(errorId, field, `Save failed. Check console.`);
+                buttonGroup.style.display = 'flex'; 
                 saveButton.disabled = false; saveButton.textContent = 'Save';
                 deleteButton.disabled = false; deleteButton.style.display = 'inline-block';
-                field.disabled = false; // Re-enable field
+                field.disabled = false; 
                 if (statusElement) statusElement.style.display = 'none';
                 updateStickyProgressBar();
             }
         };
 
-        window.deleteAnswer = function(questionId) { /* ... (unchanged logic for non-table fields) ... */
+        window.deleteAnswer = function(questionId) { 
             const field = document.querySelector(`[data-question="${questionId}"]`);
              if (!field || field.disabled) { console.warn(`Cannot delete saved/disabled answer: ${questionId}`); const errorId = `error-${questionId}`; showError(errorId, null, "Saved answers cannot be deleted."); setTimeout(() => hideError(errorId), 3000); return; }
              const currentUser = getCurrentUser(); if (!currentUser?.email) return;
@@ -673,23 +689,27 @@
             const errorId = `error-${rowIdentifier}`;
             const nameField = document.getElementById(nameId);
             const mapField = document.getElementById(mapId);
-            const buttonGroup = nameField?.closest('td')?.nextElementSibling?.querySelector('.answer-buttons'); // Buttons in second cell
+            const buttonGroup = nameField?.closest('td')?.nextElementSibling?.querySelector('.answer-buttons'); 
             const saveButton = buttonGroup?.querySelector('.save-btn');
             const deleteButton = buttonGroup?.querySelector('.delete-btn');
-            const statusElement = document.getElementById(`save-status-${rowIdentifier}`); // Row specific status
+            const statusElement = document.getElementById(`save-status-${rowIdentifier}`); 
 
             if (!nameField || !mapField || !buttonGroup || !saveButton || !deleteButton) { console.error(`Save Error: Row elements missing for ${rowIdentifier}`); return; }
             if (nameField.disabled || mapField.disabled) { console.warn('Row already saved:', rowIdentifier); return; }
 
-            const nameVal = nameField.value.trim(); const mapVal = mapField.value.trim();
+            const nameVal = nameField.value; 
+            const mapVal = mapField.value;
+            const trimmedNameVal = nameVal.trim();
+            const trimmedMapVal = mapVal.trim();
+
 
             hideError(errorId); nameField.classList.remove('required-field'); mapField.classList.remove('required-field');
-            if (statusElement) statusElement.style.display = 'none'; // Hide status initially
+            if (statusElement) statusElement.style.display = 'none'; 
 
             let rowValid = true; let focusField = null;
-            if (!nameVal && mapVal) { rowValid = false; showError(errorId, null, 'Name required.'); nameField.classList.add('required-field'); focusField = nameField; }
-            else if (nameVal && !mapVal) { rowValid = false; showError(errorId, null, 'Quadrant required.'); mapField.classList.add('required-field'); focusField = mapField; }
-            else if (!nameVal && !mapVal) { rowValid = false; showError(errorId, null, 'Both Name and Quadrant required.'); nameField.classList.add('required-field'); mapField.classList.add('required-field'); focusField = nameField; }
+            if (!trimmedNameVal && trimmedMapVal) { rowValid = false; showError(errorId, null, 'Name required.'); nameField.classList.add('required-field'); focusField = nameField; }
+            else if (trimmedNameVal && !trimmedMapVal) { rowValid = false; showError(errorId, null, 'Quadrant required.'); mapField.classList.add('required-field'); focusField = mapField; }
+            else if (!trimmedNameVal && !trimmedMapVal) { rowValid = false; showError(errorId, null, 'Both Name and Quadrant required.'); nameField.classList.add('required-field'); mapField.classList.add('required-field'); focusField = nameField; }
 
             if (!rowValid) { if(focusField) setTimeout(()=>focusField.focus({preventScroll:true}),100); updateStickyProgressBar(); return; }
 
@@ -697,31 +717,58 @@
 
             try {
                  const submissionTime = new Date().toISOString();
-                 const namePayload = { user_id: currentUser.id, email: currentUser.email, question_id: nameId, question_text: `Skill/Will - Member (Row ${rowNum})`, answer: nameVal, page: PAGE_NAME, status: 'completed', submitted_at: submissionTime, updated_at: submissionTime, section_type: 'table_row', section_id: 'skill-will-table', section_title: 'Skill/Will Matrix', progress_percentage: 100, score: null, is_passed: null };
-                 const mapPayload = { user_id: currentUser.id, email: currentUser.email, question_id: mapId, question_text: `Skill/Will - Quadrant (Row ${rowNum})`, answer: mapVal, page: PAGE_NAME, status: 'completed', submitted_at: submissionTime, updated_at: submissionTime, section_type: 'table_row', section_id: 'skill-will-table', section_title: 'Skill/Will Matrix', progress_percentage: 100, score: null, is_passed: null };
+                 const sectionTypeForRow = 'table_row'; // Specific type for table rows
 
-                 console.log("Upserting row:", namePayload, mapPayload);
+                 const namePayload = { 
+                     user_id: currentUser.id, email: currentUser.email, question_id: nameId, 
+                     question_text: `Skill/Will - Member (Row ${rowNum})`, answer: nameVal, page: PAGE_NAME, 
+                     status: 'completed', submitted_at: submissionTime, updated_at: submissionTime, 
+                     section_type: sectionTypeForRow, 
+                     section_id: 'skill-will-table', 
+                     section_title: 'Skill/Will Matrix', 
+                     progress_percentage: 100, // Number
+                     score: 0, // Number
+                     is_passed: null // Table rows don't use the length check for is_passed
+                    };
+                 const mapPayload = { 
+                     user_id: currentUser.id, email: currentUser.email, question_id: mapId, 
+                     question_text: `Skill/Will - Quadrant (Row ${rowNum})`, answer: mapVal, page: PAGE_NAME, 
+                     status: 'completed', submitted_at: submissionTime, updated_at: submissionTime, 
+                     section_type: sectionTypeForRow, 
+                     section_id: 'skill-will-table', 
+                     section_title: 'Skill/Will Matrix', 
+                     progress_percentage: 100, // Number
+                     score: 0, // Number
+                     is_passed: null // Table rows don't use the length check for is_passed
+                    };
+
+                 console.log("Payload for table row (Name) to Supabase:", namePayload); // Diagnostic log
+                 console.log("Payload for table row (Map) to Supabase:", mapPayload); // Diagnostic log
+
                  const [nameResult, mapResult] = await Promise.all([
                       supabase.from('user_progress').upsert([namePayload], { onConflict: ['user_id', 'question_id'] }).select(),
                       supabase.from('user_progress').upsert([mapPayload], { onConflict: ['user_id', 'question_id'] }).select()
                   ]);
-                 if (nameResult.error || mapResult.error) throw new Error(`Supabase error saving row: ${nameResult.error?.message || mapResult.error?.message}`);
+                 if (nameResult.error || mapResult.error) {
+                     console.error('Supabase upsert error for table row:', nameResult.error || mapResult.error);
+                     throw new Error(`Supabase error saving row: ${nameResult.error?.message || mapResult.error?.message}`);
+                 }
                  console.log("Supabase row upsert successful.");
 
                  nameField.disabled = true; mapField.disabled = true;
-                 buttonGroup.style.display = 'none'; // Hide buttons
-                 if (statusElement) { statusElement.textContent = 'Row Saved ✅'; statusElement.style.display = 'inline-block'; } // Show status
+                 buttonGroup.style.display = 'none'; 
+                 if (statusElement) { statusElement.textContent = 'Row Saved ✅'; statusElement.style.display = 'inline-block'; } 
                  saveAnswerToStorage(currentUser.email, nameId, nameVal);
                  saveAnswerToStorage(currentUser.email, mapId, mapVal);
-                 updateStickyProgressBar(); // Update overall progress
+                 updateStickyProgressBar(); 
 
              } catch(error) {
-                 console.error(`Failed to save row ${rowIdentifier}:`, error);
-                 showError(errorId, null, `Save failed. Try again.`);
-                 buttonGroup.style.display = 'flex'; // Show buttons again
+                 // Error already logged
+                 showError(errorId, null, `Save failed. Check console.`);
+                 buttonGroup.style.display = 'flex'; 
                  saveButton.disabled = false; saveButton.textContent = 'Save Row';
                  deleteButton.disabled = false; deleteButton.style.display = 'inline-block';
-                 nameField.disabled = false; mapField.disabled = false; // Re-enable fields
+                 nameField.disabled = false; mapField.disabled = false; 
                  if (statusElement) statusElement.style.display = 'none';
                  updateStickyProgressBar();
              }
@@ -743,8 +790,7 @@
              deleteAnswerFromStorage(currentUser.email,nameId); deleteAnswerFromStorage(currentUser.email,mapId);
              console.log("Cleared unsaved answer locally for row", rowIdentifier);
 
-             updateStickyProgressBar(); // Update progress
-             // Ensure buttons are visible/enabled
+             updateStickyProgressBar(); 
              const buttonGroup = nameField.closest('td')?.nextElementSibling?.querySelector('.answer-buttons');
              if(buttonGroup) { buttonGroup.style.display = 'flex'; const saveButton = buttonGroup.querySelector('.save-btn'); const deleteButton = buttonGroup.querySelector('.delete-btn'); if(saveButton) saveButton.disabled = false; if(deleteButton) deleteButton.disabled = false;}
         };
