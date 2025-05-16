@@ -617,10 +617,23 @@
                   allValid = false; console.log("Metaphor count validation failed (count < 2).");
                   if (showErrors) {
                        const m1Field = document.querySelector('[data-question="m1"]');
-                       if (m1Field) {
+                       if (m1Field && !m1Field.disabled && m1Field.value.trim() === '') { // Check if m1 is empty and not disabled
                            showError('error-m1', m1Field, `Need at least ${REQUIRED_METAPHOR_COUNT} saved metaphors.`);
                             if (!firstInvalidField) firstInvalidField = m1Field;
-                       } else { showWarningMessage(`Metaphor requirement not met (need at least ${REQUIRED_METAPHOR_COUNT} saved).`); }
+                       } else {
+                           const m2Field = document.querySelector('[data-question="m2"]');
+                           if (m2Field && !m2Field.disabled && m2Field.value.trim() === '') { // Check if m2 is empty and not disabled
+                               showError('error-m2', m2Field, `Need at least ${REQUIRED_METAPHOR_COUNT} saved metaphors.`);
+                               if (!firstInvalidField) firstInvalidField = m2Field;
+                           } else { // If both m1 and m2 have content or are disabled, but count is still low (e.g. only m1 saved)
+                                if (m1Field) { // Default to showing error on m1 if specific empty field isn't pinpointed
+                                   showError('error-m1', m1Field, `Need at least ${REQUIRED_METAPHOR_COUNT} saved metaphors.`);
+                                   if (!firstInvalidField) firstInvalidField = m1Field;
+                                } else {
+                                   showWarningMessage(`Metaphor requirement not met (need at least ${REQUIRED_METAPHOR_COUNT} saved).`);
+                                }
+                           }
+                       }
                   }
              }
 
@@ -665,8 +678,8 @@
             }
             if (field.disabled) { console.warn("Attempted to save already saved question:", questionId); return; }
 
-            const answer = field.value;
-            const trimmedAnswer = answer.trim();
+            const answer = field.value; // Raw answer
+            const trimmedAnswer = answer.trim(); // Trimmed answer for validation and length check
             const isRequired = field.classList.contains('required-answer');
 
             hideMessages(statusId, errorId, field);
@@ -681,27 +694,29 @@
             deleteButton.disabled = true;
 
             try {
-                // ... (Get questionText logic - unchanged) ...
                  let questionText = `Answer for ${questionId}`; const isMetaphor = field.classList.contains('metaphor-input');
                 if(isMetaphor){questionText=`Metaphor #${questionId.substring(1)}`;}else{const h3=questionContainer.querySelector('h3');const p_strong=field.previousElementSibling;if(h3){questionText=h3.textContent.replace('*','').trim();}else if(p_strong&&p_strong.tagName==='P'&&p_strong.querySelector('strong')){questionText=p_strong.textContent.trim();}}
 
                 const submissionTime = new Date().toISOString();
+                const sectionType = 'article'; // Hardcoded for this page context as per previous logic
+
                 const userProgressPayload = {
                     user_id:currentUser.id,
                     email:currentUser.email,
                     question_id:questionId,
                     question_text:questionText,
-                    answer:answer,
+                    answer: answer, // Store the raw answer
                     page:PAGE_NAME,
                     status:'completed',
                     submitted_at:submissionTime,
                     updated_at:submissionTime,
-                    section_type:'article',
+                    section_type: sectionType,
                     section_id:SECTION_ID,
                     section_title:document.title||'Coaching Skills',
                     progress_percentage:100,
-                    score: 0, // MODIFIED: Changed from null to 0
-                    is_passed:null
+                    score: 0,
+                    // MODIFIED: is_passed logic
+                    is_passed: (sectionType === 'article' && trimmedAnswer.length >= 25) ? true : null
                 };
 
                 console.log("Attempting to upsert to user_progress:", userProgressPayload);
@@ -718,7 +733,7 @@
                     statusElement.style.display = 'inline-block';
                 } else { console.warn(`Save Success [${questionId}]: Status span #${statusId} not found.`); }
 
-                saveAnswerToStorage(currentUser.email, questionId, answer);
+                saveAnswerToStorage(currentUser.email, questionId, answer); // Store raw answer locally
                 updateStickyProgressBar(); // Update overall progress bar
 
             } catch (error) {
@@ -806,8 +821,11 @@
              catch (e) { return false; }
              const userAnswers = allAnswers[currentUser.email] || {};
              let metaphorCount = 0;
-             ['m1', 'm2', 'm3'].forEach(qId => {
-                  if (userAnswers[qId] && userAnswers[qId].trim() !== '') {
+             ['m1', 'm2', 'm3'].forEach(qId => { // Check all metaphor fields
+                  const field = document.querySelector(`[data-question="${qId}"]`);
+                  // Count if answer exists in localStorage OR if field is present, disabled (implying saved) and has content
+                  if ((userAnswers[qId] && String(userAnswers[qId]).trim() !== '') ||
+                      (field && field.disabled && field.value.trim() !== '')) {
                      metaphorCount++;
                  }
              });
