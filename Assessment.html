@@ -485,9 +485,9 @@
     </footer>
 
     <script>
-        // ---  Configuration ---
-        const SUPABASE_URL = 'https://aefiigottnlcmjzilqnh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlZmlpZ290dG5sY21qemlscW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcxNzY2MDQsImV4cCI6MjA2Mjc1MjYwNH0.FypB02v3tGMnxXV9ZmZMdMC0oQpREKOJWgHMPxUzwX4';
+        // --- Supabase Configuration ---
+        const SUPABASE_URL = 'https://lgcutmuspcaralydycmg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnY3V0bXVzcGNhcmFseWR5Y21nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0NDY3MDEsImV4cCI6MjA2MTAyMjcwMX0.3u5Y7pkH2NNnnoGLMWVfAa5b8fq88o1itRYnG1K38tE';
         let supabase = null;
 
         // --- Unified Keys & Configuration ---
@@ -499,15 +499,14 @@
         const QUIZ_ID = 'quiz_lc_main'; // Unique identifier for this specific quiz summary record
         const SECTION_TITLE = 'Quiz: Leadership & Coaching';
         const SECTION_TYPE = 'quiz';
-        const PAGE_NAME = 'Assessment.html'; // Corrected page name
+        const PAGE_NAME = 'Assessment.html';
         const MIN_ESSAY_LENGTH = 20;
-        const LOCAL_ANSWERS_KEY = 'quiz_lc_temp_answers'; // Key for localStorage
+        const LOCAL_ANSWERS_KEY = 'quiz_lc_temp_answers';
 
         // --- Correct Answers (MCQ Only) ---
         const correctAnswers = {
             'quiz_lc_q1': 'active_listening',
             'quiz_lc_q2': 'demonstrating_behaviors',
-            // Add correct answers for other MCQ questions if any
         };
 
         // --- DOM Element References ---
@@ -516,11 +515,10 @@
             progressBarContainer, progressBar, progressText, questionBlocks;
 
         // --- State Management ---
-        let savedAnswers = {}; // Stores locally saved answers { questionId: answer }
+        let savedAnswers = {};
         let totalQuestions = 0;
         let totalMcqQuestions = 0;
 
-        // Initialize Supabase Client
         try {
             if (window.supabase && window.supabase.createClient) {
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -528,7 +526,6 @@
             } else { throw new Error("Supabase library not found."); }
         } catch (error) { console.error("CRITICAL ERROR initializing Supabase:", error); }
 
-        // ***** ---> IMMEDIATE REDIRECTION LOGIC <--- *****
          console.log("%cAssessment Page: Running IMMEDIATE redirection check...", "color: purple; font-weight: bold;");
          function quickCheckCurrentUser() { try { const data = localStorage.getItem(CURRENT_USER_KEY); return data && JSON.parse(data).id; } catch { return false; } }
          const isLoggedIn_immediate_assess = localStorage.getItem(LOGGED_IN_KEY) === 'true' && quickCheckCurrentUser();
@@ -543,23 +540,19 @@
          } else {
              console.log("%cAssessment Page IMMEDIATE Check: User IS logged in. Proceeding.", "color: green;");
          }
-         // ***** ---> END IMMEDIATE REDIRECTION LOGIC <--- *****
 
-
-        // --- Initialization ---
-        document.addEventListener('DOMContentLoaded', async function() { // Made async
+        document.addEventListener('DOMContentLoaded', async function() {
             console.log("%cAssessment page: DOMContentLoaded event fired.", "color: green;");
             mainContainer = document.getElementById('mainContainer');
 
             if (!supabase) {
                 console.error("Supabase client failed to initialize. Stopping page load.");
                 if (mainContainer) mainContainer.innerHTML = '<p class="error-message" style="display: block; text-align:center;">Connection Error. Cannot load assessment.</p>';
-                 if(mainContainer) mainContainer.style.display = 'block'; // Show the error
+                 if(mainContainer) mainContainer.style.display = 'block';
                 return;
             }
 
             try {
-                // Assign elements
                 userNameDisplay = document.getElementById('userName');
                 userEmailDisplay = document.getElementById('userEmail');
                 quizForm = document.getElementById('quizForm');
@@ -583,18 +576,13 @@
                 totalMcqQuestions = quizForm.querySelectorAll('.question-block[data-question-type="mcq"]').length;
                 console.log(`Total questions: ${totalQuestions}, MCQ questions: ${totalMcqQuestions}`);
 
-
                 const currentUser = getCurrentUser();
                 if (!currentUser || !currentUser.id || !currentUser.email) {
                     throw new Error("User data invalid or missing after DOM load.");
                 }
-
                 console.log(`%cAssessment DOMContentLoaded: User verified (${currentUser.email}, ID: ${currentUser.id}). Initializing.`, "color: green;");
-
-                // --- Initialize Page Content (Async) ---
-                await initializePageContent(currentUser); // Wait for initialization checks
-
-                if(mainContainer) mainContainer.style.display = 'block'; // Show content AFTER initialization
+                await initializePageContent(currentUser);
+                if(mainContainer) mainContainer.style.display = 'block';
                 console.log("Assessment page initialized and displayed.");
 
             } catch (error) {
@@ -608,23 +596,20 @@
             }
         });
 
-        // --- Initialize Page Content (Async) ---
         async function initializePageContent(currentUser) {
             console.log("%cAssessment page: Running initializePageContent()...", "color: blue;");
             if (!currentUser || !currentUser.id) { console.error("InitializePageContent: currentUser or ID is null!"); return; }
 
             displayUserInfo(currentUser);
             addEventListeners();
-
             console.log(`Checking Supabase if user ${currentUser.id} submitted quiz summary using question_id ${QUIZ_ID}...`);
             let hasSubmitted = false;
             try {
-                // Check if a SUMMARY record exists for this user and this specific QUIZ_ID in assessments
                 const { data: existingSubmission, error: checkError } = await supabase
                     .from('assessments')
-                    .select('score, is_correct, submitted_at') // Select fields from the summary record
+                    .select('score, is_correct, submitted_at')
                     .eq('user_id', currentUser.id)
-                    .eq('question_id', QUIZ_ID) // Check for the specific QUIZ_ID identifier
+                    .eq('question_id', QUIZ_ID)
                     .limit(1)
                     .maybeSingle();
 
@@ -636,19 +621,14 @@
                     hasSubmitted = true;
                     console.log(`%cUser HAS already submitted this assessment (summary found) on ${existingSubmission.submitted_at}. Loading answers from DB.`, "color: purple; font-weight: bold;");
                     if (quizForm) showError("You have already completed this assessment. Your previous answers are displayed.", quizForm);
-
-                    await loadAndDisplaySubmittedAnswers(currentUser.id); // Load details from user_progress
-
+                    await loadAndDisplaySubmittedAnswers(currentUser.id);
                     if(submitQuizButton) submitQuizButton.style.display = 'none';
                     if(progressBarContainer) progressBarContainer.style.display = 'none';
-
-                    // Display results immediately using data from the summary record
-                    const score = existingSubmission.score; // Score from summary
-                    const passed = existingSubmission.is_correct === 'passed'; // Status from summary
+                    const score = existingSubmission.score;
+                    const passed = existingSubmission.is_correct === 'passed';
                     const perc = totalMcqQuestions > 0 ? Math.round((score / totalMcqQuestions) * 100) : 0;
                     displayFinalResults(score, totalMcqQuestions, perc, passed);
                     if (quizForm) quizForm.style.display = 'none';
-
                 } else {
                     console.log("%cUser has not submitted this assessment yet. Loading from localStorage.", "color: green;");
                     loadAnswersFromLocalStorage();
@@ -656,52 +636,44 @@
                     if(submitQuizButton) submitQuizButton.style.display = 'block';
                     if(resultsContainer) resultsContainer.style.display = 'none';
                 }
-
             } catch (error) {
                  console.error("Error during initial assessment check:", error);
                  showError(`Error checking assessment status: ${error.message}. Loading local data as fallback.`);
                  loadAnswersFromLocalStorage();
                  updateProgressBar();
             }
-
             console.log("initializePageContent() finished.");
         }
 
-        // --- Load Submitted Answers from Supabase (user_progress) ---
         async function loadAndDisplaySubmittedAnswers(userId) {
             console.log(`Fetching submitted answer details for user ${userId} and quiz ${QUIZ_ID} from user_progress...`);
             try {
                 const { data: submittedAnswers, error } = await supabase
                     .from('user_progress')
-                    .select('question_id, answer') // Fetch specific question answers
+                    .select('question_id, answer')
                     .eq('user_id', userId)
-                    .eq('section_id', QUIZ_ID); // Filter by the overall quiz ID
+                    .eq('section_id', QUIZ_ID);
 
                 if (error) {
                     throw new Error(`Error fetching submitted answers: ${error.message}`);
                 }
-
-                 savedAnswers = {}; // Reset local state
+                 savedAnswers = {};
                  const answerMap = {};
-
                 if (!submittedAnswers || submittedAnswers.length === 0) {
                     console.warn("No detailed submitted answers found in user_progress for this quiz.");
                 } else {
                     console.log("Fetched submitted answers:", submittedAnswers);
                      submittedAnswers.forEach(item => {
                          answerMap[item.question_id] = item.answer;
-                         savedAnswers[item.question_id] = item.answer; // Populate state for progress
+                         savedAnswers[item.question_id] = item.answer;
                      });
                 }
-
-                // Populate UI and disable elements
                 questionBlocks.forEach(block => {
                     const questionId = block.dataset.questionId;
                     const questionType = block.dataset.questionType;
                     const dbAnswer = answerMap[questionId];
                     const inputs = block.querySelectorAll('input, textarea');
                     const saveButton = block.querySelector('.save-question-button');
-
                     if (dbAnswer !== undefined && dbAnswer !== null) {
                         if (questionType === 'mcq') {
                             const radioToCheck = block.querySelector(`input[value="${dbAnswer}"]`);
@@ -710,9 +682,7 @@
                             const textArea = block.querySelector('textarea');
                             if (textArea) textArea.value = dbAnswer;
                         }
-                    } // else leave blank/unchecked
-
-                    // Disable everything
+                    }
                     inputs.forEach(input => input.disabled = true);
                     if(saveButton) {
                         saveButton.textContent = 'Submitted';
@@ -722,8 +692,7 @@
                     block.classList.add('submitted');
                     block.classList.remove('saved');
                 });
-                updateProgressBar(); // Update progress bar based on fetched answers
-
+                updateProgressBar();
             } catch (error) {
                  console.error("Error in loadAndDisplaySubmittedAnswers:", error);
                  showError(`Could not load previous answers: ${error.message}`);
@@ -733,25 +702,14 @@
             }
         }
 
-        // --- Core User Functions (Unchanged) ---
         function getCurrentUser() { try { const userData = localStorage.getItem(CURRENT_USER_KEY); if (!userData) return null; const user = JSON.parse(userData); if (user && typeof user === 'object' && user.email && user.id) { if (!user.name) user.name = user.email.split('@')[0]; return user; } else { console.warn("Stored user data is invalid or missing ID. Clearing."); localStorage.removeItem(CURRENT_USER_KEY); localStorage.removeItem(LOGGED_IN_KEY); return null; } } catch (e) { console.error("Error parsing current user data:", e); localStorage.removeItem(CURRENT_USER_KEY); localStorage.removeItem(LOGGED_IN_KEY); return null; } }
         function displayUserInfo(currentUser) { try { let uN = 'User'; let uE = ''; if (currentUser) { uN = currentUser.name || currentUser.email.split('@')[0]; uE = currentUser.email || ''; } if (userNameDisplay) userNameDisplay.textContent = `Welcome, ${uN}`; if (userEmailDisplay) userEmailDisplay.textContent = uE; } catch (err) { console.error("Error in displayUserInfo:", err); if (userNameDisplay) userNameDisplay.textContent = 'Welcome'; if (userEmailDisplay) userEmailDisplay.textContent = ''; } }
         function logout() { try { localStorage.removeItem(LOGGED_IN_KEY); localStorage.removeItem(CURRENT_USER_KEY); localStorage.removeItem(LOCAL_ANSWERS_KEY); console.log("User logged out, keys cleared."); window.location.href = 'login.html'; } catch (e) { console.error("Logout error:", e); window.location.href = 'login.html'; } }
-
-        // --- Event Listeners (Unchanged) ---
         function addEventListeners() { try{if(quizForm){quizForm.addEventListener('submit',handleQuizSubmit);}questionBlocks.forEach(block=>{const saveButton=block.querySelector('.save-question-button');if(saveButton){saveButton.addEventListener('click',handleSaveQuestion);}const inputs=block.querySelectorAll('input[type="radio"], textarea');inputs.forEach(input=>{input.addEventListener('input',()=>{const errorMsgElement=block.querySelector('.question-error-message');if(errorMsgElement)errorMsgElement.style.display='none';});});});}catch(err){console.error("Error adding event listeners:",err);}}
-
-        // --- Load Saved Answers from LocalStorage (Unchanged) ---
         function loadAnswersFromLocalStorage() { try{const storedAnswers=JSON.parse(localStorage.getItem(LOCAL_ANSWERS_KEY)||'{}');savedAnswers=storedAnswers;if(Object.keys(savedAnswers).length>0){console.log("%cLoading temporary answers from localStorage:","color: orange;",savedAnswers);questionBlocks.forEach(block=>{const questionId=block.dataset.questionId;const questionType=block.dataset.questionType;const savedAnswer=savedAnswers[questionId];if(savedAnswer!==undefined&&savedAnswer!==null){const inputs=block.querySelectorAll('input, textarea');const saveButton=block.querySelector('.save-question-button');const errorMsgElement=block.querySelector('.question-error-message');if(errorMsgElement)errorMsgElement.style.display='none';if(questionType==='mcq'){const radioToCheck=block.querySelector(`input[value="${savedAnswer}"]`);if(radioToCheck)radioToCheck.checked=true;}else if(questionType==='text'){const textArea=block.querySelector('textarea');if(textArea)textArea.value=savedAnswer;}inputs.forEach(input=>input.disabled=true);if(saveButton){saveButton.textContent='Saved ✓';saveButton.disabled=true;}block.classList.add('saved');}});}}catch(e){console.error("Error loading answers from localStorage:",e);localStorage.removeItem(LOCAL_ANSWERS_KEY);savedAnswers={};}}
-
-        // --- Handle Saving Individual Question (Unchanged) ---
         function handleSaveQuestion(event) { const saveButton=event.target;const questionBlock=saveButton.closest('.question-block');const questionId=questionBlock.dataset.questionId;const questionType=questionBlock.dataset.questionType;const errorMsgElement=questionBlock.querySelector('.question-error-message');const radioGroupName=questionType==='mcq'?questionBlock.querySelector('input[type="radio"]')?.name:null;let userAnswer=null;let isValid=false;if(errorMsgElement)errorMsgElement.style.display='none';if(questionType==='mcq'){if(!radioGroupName){console.error(`Could not find radio group name for ${questionId}`);return;}const selectedRadio=questionBlock.querySelector(`input[name="${radioGroupName}"]:checked`);if(selectedRadio){userAnswer=selectedRadio.value;isValid=true;}else{showQuestionError("Please select an option.",errorMsgElement);}}else if(questionType==='text'){const textArea=questionBlock.querySelector('textarea');if(textArea){userAnswer=textArea.value.trim();if(userAnswer.length>=MIN_ESSAY_LENGTH){isValid=true;}else if(userAnswer.length===0){showQuestionError("Please enter your answer.",errorMsgElement);}else{showQuestionError(`Answer must be at least ${MIN_ESSAY_LENGTH} characters long.`,errorMsgElement);}}}if(isValid&&userAnswer!==null){console.log(`Locally saving answer for ${questionId}:`,userAnswer);savedAnswers[questionId]=userAnswer;try{localStorage.setItem(LOCAL_ANSWERS_KEY,JSON.stringify(savedAnswers));console.log(`%cUpdated localStorage with ${questionId}.`,'color: orange;');}catch(e){console.error("Error saving answer to localStorage:",e);showQuestionError("Could not save answer locally.",errorMsgElement);return;}const inputs=questionBlock.querySelectorAll('input, textarea');inputs.forEach(input=>input.disabled=true);saveButton.textContent='Saved ✓';saveButton.disabled=true;questionBlock.classList.add('saved');updateProgressBar();hideError();}}
-
-        // --- Update Progress Bar (Unchanged) ---
         function updateProgressBar() { const savedCount=Object.keys(savedAnswers).length;const percentage=totalQuestions>0?Math.round((savedCount/totalQuestions)*100):0;if(progressBar&&progressText){progressBar.style.width=`${percentage}%`;progressText.textContent=`${percentage}% Completed (${savedCount}/${totalQuestions})`;}}
 
-
-        // --- MODIFIED: Handle Final Quiz Submission ---
         async function handleQuizSubmit(event) {
             event.preventDefault();
             console.log("Final Submission: Starting...");
@@ -768,10 +726,11 @@
                 setButtonLoading(false);
                 return;
             }
-            console.log(`handleQuizSubmit: User verified - ID: ${currentUser.id}, Email: ${currentUser.email}`);
-            const userName = currentUser.name || currentUser.email.split('@')[0];
+            console.log(`handleQuizSubmit: User verified - ID: ${currentUser.id} (Type: ${typeof currentUser.id}), Email: ${currentUser.email}`);
 
+            const userName = currentUser.name || currentUser.email.split('@')[0];
             const savedCount = Object.keys(savedAnswers).length;
+
             if (savedCount < totalQuestions) {
                 showError(`Please answer and save all ${totalQuestions} questions before submitting. You have saved ${savedCount}.`, quizForm);
                 questionBlocks.forEach(block => {
@@ -793,117 +752,132 @@
 
             let mcqScore = 0;
             const resultsForDB = [];
-            const submissionTime = new Date();
+            const submissionTime = new Date(); // Single timestamp for all related records
 
             questionBlocks.forEach(block => {
-                const questionId = block.dataset.questionId;
-                const questionType = block.dataset.questionType;
+                const questionId = block.dataset.questionId; // string
+                const questionType = block.dataset.questionType; // string, e.g., "mcq", "text"
                 const questionTextElement = block.querySelector('.question-text');
-                const questionText = questionTextElement ? (questionTextElement.dataset.questionText || questionTextElement.textContent.trim()) : 'Unknown Question Text';
-                const userAnswer = savedAnswers[questionId];
-                let isCorrect = null;
-                let scoreValue = 0;
+                const questionText = questionTextElement ? (questionTextElement.dataset.questionText || questionTextElement.textContent.trim()) : 'Unknown Question Text'; // string
+                const userAnswer = savedAnswers[questionId]; // string (from radio value or textarea)
+                
+                let isCorrectForThisQuestion = null; // Will be boolean for MCQ, null for text
+                let scoreValueForThisQuestion = 0;   // Will be 1 for correct MCQ, 0 otherwise
 
                 if (questionType === 'mcq') {
                     const correctAnswer = correctAnswers[questionId];
-                    isCorrect = userAnswer === correctAnswer;
-                    if (isCorrect) {
-                        mcqScore++;
-                        scoreValue = 1;
+                    isCorrectForThisQuestion = (userAnswer === correctAnswer);
+                    if (isCorrectForThisQuestion) {
+                        mcqScore++; // Increment overall MCQ score
+                        scoreValueForThisQuestion = 1;
                     }
                 }
+                // For text questions, isCorrectForThisQuestion remains null, and scoreValueForThisQuestion remains 0
+
                 resultsForDB.push({
                     question_id: questionId,
                     question_type: questionType,
                     user_answer: userAnswer,
-                    is_correct: isCorrect,
-                    score: scoreValue,
+                    is_correct_mcq: isCorrectForThisQuestion, // Store MCQ correctness specifically
+                    score_mcq: scoreValueForThisQuestion,     // Store MCQ score specifically
                     question_text: questionText
                 });
             });
 
             const percentage = totalMcqQuestions > 0 ? Math.round((mcqScore / totalMcqQuestions) * 100) : 0;
-            const isPassedOverall = percentage >= 50; // Assuming 50% is passing for MCQ part
-            console.log(`Final Check - MCQ Score: ${mcqScore}/${totalMcqQuestions}, Percentage: ${percentage}%, Passed: ${isPassedOverall}`);
+            const isPassedOverall = percentage >= 50;
+            console.log(`Final Calculation - MCQ Score: ${mcqScore}/${totalMcqQuestions}, Percentage: ${percentage}%, Passed Overall (MCQ): ${isPassedOverall}`);
 
-            // Payload for the overall assessment summary in 'assessments' table
+            // Payload for the 'assessments' table (overall summary)
             const assessmentSummaryPayload = {
-                name: userName,
-                question_id: QUIZ_ID, // Use QUIZ_ID for the summary record identifier
-                answer: 'N/A',
-                is_correct: isPassedOverall ? 'passed' : 'failed', // Use boolean or specific strings
-                score: mcqScore,
-                submitted_at: submissionTime.toISOString(),
-                goal_answer: null,
-                section_id: QUIZ_ID,
-                completion_status: 'completed',
-                question_text: SECTION_TITLE,
-                user_id: currentUser.id,
-                page: PAGE_NAME,
-                type: SECTION_TYPE,
-                user_email: currentUser.email
+                user_id: currentUser.id,         // UUID string
+                user_email: currentUser.email,   // string
+                name: userName,                  // string
+                question_id: QUIZ_ID,            // string (e.g., 'quiz_lc_main') - This is the ID for the summary record
+                answer: JSON.stringify({ overallScore: mcqScore, totalMcq: totalMcqQuestions, percentage: percentage }), // JSON object for 'answer' (jsonb type)
+                is_correct: isPassedOverall ? 'passed' : 'failed', // string ('passed' or 'failed' based on MCQ)
+                score: mcqScore,                 // number (overall MCQ score for this assessment)
+                submitted_at: submissionTime.toISOString(), // string
+                page: PAGE_NAME,                 // string
+                type: SECTION_TYPE,              // string (e.g., 'quiz')
+                completion_status: 'completed',  // string
+                question_text: SECTION_TITLE,    // string (Title of the quiz)
+                section_id: QUIZ_ID,             // string (Identifier for this quiz section)
+                goal_answer: null                // null or specific JSON if needed
             };
 
-             // Payload array for individual answers in 'user_progress' table
-            const userProgressPayloadArray = resultsForDB.map(result => ({
-                user_id: currentUser.id,
-                section_type: SECTION_TYPE,
-                section_id: QUIZ_ID,
-                section_title: SECTION_TITLE,
-                question_id: result.question_id, // Specific question ID
-                question_text: result.question_text,
-                page: PAGE_NAME,
-                progress_percentage: 100,
-                score: result.score,
-                status: 'completed',
-                submitted_at: submissionTime.toISOString(),
-                updated_at: submissionTime.toISOString(),
-                is_passed: result.question_type === 'mcq' ? result.is_correct : null,
-                email: currentUser.email,
-                answer: result.user_answer
-            }));
+            // Payload array for individual answers in 'user_progress' table
+            const userProgressPayloadArray = resultsForDB.map(result => {
+                return {
+                    user_id: currentUser.id,                  // UUID string
+                    email: currentUser.email,                 // string
+                    section_type: SECTION_TYPE,               // string (e.g., 'quiz')
+                    section_id: QUIZ_ID,                      // string (ID of the overall quiz)
+                    section_title: SECTION_TITLE,             // string (Title of the quiz)
+                    question_id: result.question_id,          // string (e.g., 'quiz_lc_q1')
+                    question_text: result.question_text,      // string
+                    page: PAGE_NAME,                          // string
+                    answer: result.user_answer,               // string (user's actual answer text)
+                    
+                    // For 'is_passed' (text type in DB): string 'true', 'false', or null
+                    is_passed: result.question_type === 'mcq' ? String(result.is_correct_mcq) : null,
+                    
+                    // For 'score' (numeric type in DB): number (0 for text/incorrect MCQ, 1 for correct MCQ)
+                    score: result.score_mcq,
+                                        
+                    progress_percentage: 100,                 // number (always 100 for a completed question)
+                    status: 'completed',                      // string
+                    submitted_at: submissionTime.toISOString(), // string
+                    updated_at: submissionTime.toISOString()  // string
+                };
+            });
+            
+            console.log("Payload for 'assessments':", JSON.stringify(assessmentSummaryPayload, null, 2));
+            console.log("Payload for 'user_progress' (first item example):", userProgressPayloadArray.length > 0 ? JSON.stringify(userProgressPayloadArray[0], null, 2) : "No items");
+            console.log("Structure of a user_progress item being sent:", userProgressPayloadArray.length > 0 ? Object.keys(userProgressPayloadArray[0]).join(', ') : "N/A");
 
             try {
                 console.log("Upserting summary to 'assessments'...");
-                // *** تعديل المكان الأول: استخدام onConflict الصحيح ***
-                const { error: assessmentError } = await supabase
+                const { data: assessmentData, error: assessmentError } = await supabase
                     .from('assessments')
                     .upsert([assessmentSummaryPayload], {
-                         onConflict: 'user_id, question_id' // CORRECT: Matches DB constraint for the summary record
+                         onConflict: 'user_id, question_id' // Constraint on (user_id, QUIZ_ID)
                     })
                     .select();
 
-                if (assessmentError) throw new Error(`Database error (assessments): ${assessmentError.message}`);
-                console.log('%cSupabase Upsert Success (assessments)', 'color: green;');
-
+                if (assessmentError) {
+                    console.error("Supabase error (assessments):", assessmentError);
+                    throw new Error(`Database error (assessments): ${assessmentError.message} - Details: ${assessmentError.details} - Hint: ${assessmentError.hint}`);
+                }
+                console.log('%cSupabase Upsert Success (assessments)', 'color: green;', assessmentData);
 
                 console.log("Upserting details to 'user_progress'...");
-                 // *** تعديل المكان الثاني: استخدام onConflict الصحيح ***
-                const { error: progressError } = await supabase
+                const { data: progressData, error: progressError } = await supabase
                     .from('user_progress')
                     .upsert(userProgressPayloadArray, {
-                        onConflict: 'user_id, question_id' // CORRECT: Matches DB constraint for individual answers
+                        onConflict: 'user_id, question_id' // Constraint on (user_id, specific_question_id)
                     })
                     .select();
 
-                if (progressError) throw new Error(`Database error (user progress): ${progressError.message}`);
-                console.log('%cSupabase Upsert Success (user_progress)', 'color: green;');
+                if (progressError) {
+                    console.error("Supabase error (user_progress):", progressError);
+                    throw new Error(`Database error (user progress): ${progressError.message} - Details: ${progressError.details} - Hint: ${progressError.hint}`);
+                }
+                console.log('%cSupabase Upsert Success (user_progress)', 'color: green;', progressData);
 
-                // --- Update User Status (Keep this logic) ---
                 console.log(`%cAttempting to update user ${currentUser.id} assessment_completed status...`, "color: blue; font-weight: bold;");
                 const { data: updateData, error: updateError } = await supabase
-                    .from('users')
+                    .from('users') // Assuming your users table is named 'users'
                     .update({ assessment_completed: true })
-                    .eq('id', currentUser.id);
+                    .eq('id', currentUser.id)
+                    .select();
 
                 if (updateError) {
                     console.error(`%cCRITICAL: Failed to update user assessment_completed status for user ${currentUser.id}. Supabase Error:`, "color: red; font-weight: bold;", updateError);
                 } else {
-                    console.log(`%cSuccessfully initiated update for assessment_completed status for user ${currentUser.id}. Response data (if any):`, "color: green;", updateData);
+                    console.log(`%cSuccessfully updated assessment_completed status for user ${currentUser.id}. Response:`, "color: green;", updateData);
                 }
-                // --- End Update User Status ---
 
-                // Display results and clean up UI
                 displayFinalResults(mcqScore, totalMcqQuestions, percentage, isPassedOverall);
                 if (quizForm) quizForm.style.display = 'none';
                 if (progressBarContainer) progressBarContainer.style.display = 'none';
@@ -912,22 +886,22 @@
 
             } catch (error) {
                 console.error("Error during Supabase submission process:", error);
-                // Use the specific variable for quiz error messages if available
                 const errorDisplayElement = document.getElementById('quizErrorMessage') || document.body;
-                showError(`Submission failed: ${error.message}. Please check your connection and try again, or contact support if the issue persists.`, errorDisplayElement);
-                setButtonLoading(false); // Re-enable button on failure
+                let detailedMessage = `Submission failed: ${error.message}.`;
+                if (error.details) detailedMessage += ` Details: ${error.details}`;
+                if (error.hint) detailedMessage += ` Hint: ${error.hint}`;
+                detailedMessage += ` Please check your connection and try again, or contact support if the issue persists.`;
+                
+                showError(detailedMessage, errorDisplayElement);
+            } finally {
+                setButtonLoading(false); // Ensure button is re-enabled
             }
         }
-        // --- END handleQuizSubmit ---
 
-
-        // --- Display Final Results (Unchanged) ---
         function displayFinalResults(finalMcqScore, totalMcq, perc, passedOverall) { if(!resultsContainer||!scoreText||!resultsMessage||!resultEmoji)return;let emoji='';let message='';if(totalMcq>0){scoreText.textContent=`Your Score (MCQ): ${finalMcqScore} / ${totalMcq} (${perc}%)`;if(passedOverall){emoji='🎉';message="Excellent work! You've successfully completed the assessment. Your essay answers have also been recorded.";}else{emoji='💡';message="Assessment complete. Your essay answers have been recorded. We encourage you to review the course materials to solidify your understanding!";}}else{scoreText.textContent="Assessment Submitted";emoji='✅';message="Thank you for submitting your responses!";}resultEmoji.textContent=emoji;resultsMessage.textContent=message;resultsContainer.style.display='block';resultsContainer.scrollIntoView({behavior:'smooth',block:'center'});}
-
-        // --- Utility Functions (Unchanged) ---
         function showQuestionError(message, element) { if(element){element.textContent=message;element.style.display="block";} }
         function setButtonLoading(isLoading, text = 'Submit Assessment') { if(!submitQuizButton)return;submitQuizButton.disabled=isLoading;submitQuizButton.textContent=isLoading?'Submitting...':text; }
-        function showError(message, contextElement = document.getElementById('quizErrorMessage')) { const errorElement = contextElement || document.getElementById('quizErrorMessage'); if(errorElement){ errorElement.innerHTML = message; errorElement.style.display = "block"; if(errorElement.scrollIntoView) errorElement.scrollIntoView({behavior:'smooth', block:'nearest'}); } else { console.error("Fallback Error Display:", message); /* Backup alert if element not found */ alert("Error: " + message); } console.error("Displayed Error:",message); }
+        function showError(message, contextElement = document.getElementById('quizErrorMessage')) { const errorElement = contextElement || document.getElementById('quizErrorMessage'); if(errorElement){ errorElement.innerHTML = message; errorElement.style.display = "block"; if(errorElement.scrollIntoView) errorElement.scrollIntoView({behavior:'smooth', block:'nearest'}); } else { console.error("Fallback Error Display:", message); alert("Error: " + message); } console.error("Displayed Error:",message); }
         function hideError() { const errorElement = document.getElementById('quizErrorMessage'); if(errorElement) errorElement.style.display="none"; }
 
     </script>
