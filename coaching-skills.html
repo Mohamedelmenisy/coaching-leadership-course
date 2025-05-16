@@ -713,15 +713,20 @@
                     section_type: sectionType,
                     section_id:SECTION_ID,
                     section_title:document.title||'Coaching Skills',
-                    progress_percentage:100,
-                    score: 0,
-                    // MODIFIED: is_passed logic
-                    is_passed: (sectionType === 'article' && trimmedAnswer.length >= 25) ? true : null
+                    progress_percentage: 100, // Number
+                    score: 0, // Number
+                    is_passed: (sectionType === 'article' && trimmedAnswer.length >= 25) ? true : null // Boolean or null
                 };
 
-                console.log("Attempting to upsert to user_progress:", userProgressPayload);
+                // ADDED FOR DIAGNOSTICS:
+                console.log('Payload being sent to Supabase:', userProgressPayload);
+
                 const { data, error } = await supabase.from('user_progress').upsert([userProgressPayload], { onConflict: ['user_id', 'question_id'] }).select();
-                if (error) throw new Error(`Supabase error: ${error.message}`);
+                
+                if (error) {
+                    console.error('Supabase upsert error:', error);
+                    throw new Error(`Supabase error: ${error.message}`);
+                }
                 console.log("Supabase upsert successful:", data);
 
                 // --- Update UI on SUCCESS ---
@@ -737,8 +742,8 @@
                 updateStickyProgressBar(); // Update overall progress bar
 
             } catch (error) {
-                console.error(`Failed to save answer for ${questionId}:`, error);
-                showError(errorId, field, `Save failed. Try again.`);
+                // Error already logged by Supabase or above
+                showError(errorId, field, `Save failed. Check console & try again.`);
                 if (buttonGroup) buttonGroup.style.display = 'flex';
                 if(saveButton) { saveButton.disabled = false; saveButton.textContent = 'Save'; }
                 if(deleteButton) { deleteButton.disabled = false; deleteButton.style.display = 'inline-block';}
