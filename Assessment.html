@@ -802,7 +802,7 @@
                 const questionText = questionTextElement ? (questionTextElement.dataset.questionText || questionTextElement.textContent.trim()) : 'Unknown Question Text';
                 const userAnswer = savedAnswers[questionId];
                 let isCorrect = null;
-                let scoreValue = 0;
+                let scoreValue = 0; // Ensure scoreValue is always a number
 
                 if (questionType === 'mcq') {
                     const correctAnswer = correctAnswers[questionId];
@@ -811,13 +811,14 @@
                         mcqScore++;
                         scoreValue = 1;
                     }
-                }
+                } // For 'text' type, isCorrect remains null and scoreValue remains 0
+
                 resultsForDB.push({
                     question_id: questionId,
                     question_type: questionType,
                     user_answer: userAnswer,
-                    is_correct: isCorrect,
-                    score: scoreValue,
+                    is_correct: isCorrect, // boolean or null
+                    score: scoreValue, // number (0 or 1)
                     question_text: questionText
                 });
             });
@@ -831,8 +832,8 @@
                 name: userName,
                 question_id: QUIZ_ID, // Use QUIZ_ID for the summary record identifier
                 answer: 'N/A',
-                is_correct: isPassedOverall ? 'passed' : 'failed', // Use boolean or specific strings
-                score: mcqScore,
+                is_correct: isPassedOverall ? 'passed' : 'failed', // Use specific strings for 'assessments' table
+                score: mcqScore, // Overall MCQ score for the assessment
                 submitted_at: submissionTime.toISOString(),
                 goal_answer: null,
                 section_id: QUIZ_ID,
@@ -853,23 +854,23 @@
                 question_id: result.question_id, // Specific question ID
                 question_text: result.question_text,
                 page: PAGE_NAME,
-                progress_percentage: 100,
-                score: result.score,
+                progress_percentage: 100, // Assuming full completion here, ensure this column exists and matches DB
+                score: Number(result.score) || 0, // Ensure score is a number, default to 0 if undefined/NaN
                 status: 'completed',
                 submitted_at: submissionTime.toISOString(),
                 updated_at: submissionTime.toISOString(),
-                is_passed: result.question_type === 'mcq' ? result.is_correct : null,
+                // MODIFICATION: Convert boolean is_correct to string for 'user_progress.is_passed' if it's a text field
+                is_passed: result.question_type === 'mcq' ? String(result.is_correct) : null,
                 email: currentUser.email,
                 answer: result.user_answer
             }));
 
             try {
                 console.log("Upserting summary to 'assessments'...");
-                // *** تعديل المكان الأول: استخدام onConflict الصحيح ***
                 const { error: assessmentError } = await supabase
                     .from('assessments')
                     .upsert([assessmentSummaryPayload], {
-                         onConflict: 'user_id, question_id' // CORRECT: Matches DB constraint for the summary record
+                         onConflict: 'user_id, question_id' // Matches DB constraint for the summary record
                     })
                     .select();
 
@@ -878,11 +879,10 @@
 
 
                 console.log("Upserting details to 'user_progress'...");
-                 // *** تعديل المكان الثاني: استخدام onConflict الصحيح ***
                 const { error: progressError } = await supabase
                     .from('user_progress')
                     .upsert(userProgressPayloadArray, {
-                        onConflict: 'user_id, question_id' // CORRECT: Matches DB constraint for individual answers
+                        onConflict: 'user_id, question_id' // Matches DB constraint for individual answers
                     })
                     .select();
 
