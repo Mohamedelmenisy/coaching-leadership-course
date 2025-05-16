@@ -90,13 +90,13 @@
         .editable-answer:disabled { background-color: #f0f0f0 !important; cursor: not-allowed !important; color: #6c757d !important; border-color: #ddd !important; box-shadow: none !important; }
         .save-btn, .delete-btn { color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; transition: all 0.3s ease; font-size: 14px; font-weight: 500; }
         .save-btn { background-color: #27ae60; }
-        .delete-btn { background-color: #e74c3c; } /* Keep original margin-right on save */
+        .delete-btn { background-color: #e74c3c; } 
         .save-btn:hover:not(:disabled) { background-color: #2ecc71; transform: translateY(-1px); }
         .delete-btn:hover:not(:disabled) { background-color: #c0392b; transform: translateY(-1px); }
         .save-btn:active, .delete-btn:active { transform: translateY(0); }
         .save-btn:disabled, .delete-btn:disabled { background-color: #bdc3c7 !important; cursor: not-allowed !important; box-shadow: none !important; transform: none !important; opacity: 0.7 !important; }
-        .save-status { font-size: 14px; color: #27ae60; margin-top: 12px; display: none; font-weight: 600; } /* Persistent status */
-        .inline-error-message { color: #e74c3c; font-size: 13px; margin-left: 5px; display: none; font-weight: 500; margin-top: 5px; /* Added margin */ }
+        .save-status { font-size: 14px; color: #27ae60; margin-top: 12px; display: none; font-weight: 600; } 
+        .inline-error-message { color: #e74c3c; font-size: 13px; margin-left: 5px; display: none; font-weight: 500; margin-top: 5px; }
         .action-card .inline-error-message { color: #f8d7da; }
         /* Tables */
         table { width: 100%; border-collapse: collapse; margin: 25px 0; font-size: 14px; }
@@ -107,7 +107,7 @@
         .action-table td { vertical-align: top; color: #333; }
         .skill-will-table { width: 100%; border-collapse: collapse; margin: 25px 0; font-size: 14px; }
         .skill-will-table th { background-color: #e67e22; color: white; text-align: center; }
-        .skill-will-table td { vertical-align: middle; background-color: rgba(230, 126, 34, 0.05); padding: 10px; position: relative; /* For status */ }
+        .skill-will-table td { vertical-align: middle; background-color: rgba(230, 126, 34, 0.05); padding: 10px; position: relative; }
         .skill-will-table .editable-answer {
             width: auto; min-width: 150px; margin: 0; padding: 8px 10px; font-size: 14px;
             display: inline-block; vertical-align: middle; flex-grow: 1; color: #333;
@@ -116,14 +116,14 @@
          .skill-will-table select.editable-answer { padding-right: 30px; }
         .skill-will-table input.editable-answer::placeholder { color: #888; }
         .table-input-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .answer-buttons { display: flex; gap: 8px; align-items: center; flex-shrink: 0; margin-left: 10px; /* Space between input/select and buttons */ }
-         .skill-will-table .save-status { /* Position status inside table cell */
-             margin-top: 0; /* Reset margin */
+        .answer-buttons { display: flex; gap: 8px; align-items: center; flex-shrink: 0; margin-left: 10px; }
+         .skill-will-table .save-status { 
+             margin-top: 0; 
              margin-left: 10px;
              font-size: 13px;
          }
          .skill-will-table .inline-error-message {
-             display: block; /* Ensure error shows below */
+             display: block; 
              width: 100%;
              margin-left: 0;
              margin-top: 4px;
@@ -137,9 +137,9 @@
         .button:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(110%); }
         .button:active:not(:disabled) { transform: translateY(0); filter: brightness(100%); }
         .button:disabled { background-color: #bdc3c7 !important; cursor: not-allowed !important; box-shadow: none !important; transform: none !important; opacity: 0.7 !important; }
-        .warning-message { background-color: #fff8e1; border-left: 4px solid #ffc107; padding: 15px 25px; margin: 20px 0; color: #333; display: none; font-size: 14px; line-height: 1.6; border-radius: 4px; font-weight: 500; position: fixed; /* Make it fixed */ top: 100px; /* Adjust based on sticky elements */ left: 50%; transform: translateX(-50%); z-index: 1001; box-shadow: 0 3px 10px rgba(0,0,0,0.2); animation: slideDownFadeInWarn 0.4s ease-out; width: auto; min-width: 300px; max-width: 90%; text-align: center;}
-         @keyframes slideDownFadeInWarn { from { opacity: 0; top: 70px; } to { opacity: 1; top: 100px; } } /* Adjust top */
-         @keyframes fadeOutUpWarn { from { opacity: 1; top: 100px; } to { opacity: 0; top: 70px; } } /* Adjust top */
+        .warning-message { background-color: #fff8e1; border-left: 4px solid #ffc107; padding: 15px 25px; margin: 20px 0; color: #333; display: none; font-size: 14px; line-height: 1.6; border-radius: 4px; font-weight: 500; position: fixed; top: 100px; left: 50%; transform: translateX(-50%); z-index: 1001; box-shadow: 0 3px 10px rgba(0,0,0,0.2); animation: slideDownFadeInWarn 0.4s ease-out; width: auto; min-width: 300px; max-width: 90%; text-align: center;}
+         @keyframes slideDownFadeInWarn { from { opacity: 0; top: 70px; } to { opacity: 1; top: 100px; } } 
+         @keyframes fadeOutUpWarn { from { opacity: 1; top: 100px; } to { opacity: 0; top: 70px; } } 
 
         .required-field { border: 2px solid #e74c3c !important; background-color: #fff2f1 !important; box-shadow: none !important; }
         /* Section specific styles */
@@ -193,7 +193,7 @@
              .skill-will-matrix { grid-template-columns: 1fr; }
              .table-input-group { flex-direction: column; align-items: stretch; }
              .skill-will-table .editable-answer { width: 100%; display: block; }
-             .answer-buttons { justify-content: flex-start; margin-left: 0; margin-top: 5px;} /* Reset margin */
+             .answer-buttons { justify-content: flex-start; margin-left: 0; margin-top: 5px;} 
              /* Responsive Tables */
              table:not(.action-table), table:not(.action-table) thead, table:not(.action-table) tbody, table:not(.action-table) th, table:not(.action-table) td, table:not(.action-table) tr { display: block; }
              table:not(.action-table) thead tr { position: absolute; top: -9999px; left: -9999px; }
@@ -203,8 +203,8 @@
              .skill-will-table td:before { top: 50%; transform: translateY(-50%); }
              .table-input-group { flex-direction: column; align-items: flex-end; gap: 5px; }
              .skill-will-table .editable-answer { min-width: 0; }
-             .answer-buttons { justify-content: flex-end; margin-top: 5px; } /* Align buttons right */
-             .skill-will-table .save-status { text-align: right; width: 100%; margin-top: 5px; } /* Adjust status position */
+             .answer-buttons { justify-content: flex-end; margin-top: 5px; } 
+             .skill-will-table .save-status { text-align: right; width: 100%; margin-top: 5px; } 
         }
         @media (max-width: 480px) {
              #sticky-progress-container { top: 48px; }
@@ -223,12 +223,12 @@
 </head>
 <body>
     <!-- User Info Bar -->
-    <div class="user-bar"> <!-- ... User bar content (Original) ... -->
+    <div class="user-bar"> 
         <div class="user-info"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.8;"> <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path> <circle cx="12" cy="7" r="4"></circle> </svg> <div class="user-details"> <span class="user-name" id="userName">Loading...</span> <span class="user-email" id="userEmail"></span> </div> </div> <button class="logout-button" onclick="logout()"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path> <polyline points="16 17 21 12 16 7"></polyline> <line x1="21" y1="12" x2="9" y2="12"></line> </svg> Logout </button>
     </div>
 
     <!-- Navigation Tabs -->
-    <nav class="nav-tab"> <!-- ... Navigation links (Original) ... -->
+    <nav class="nav-tab"> 
          <a href="dashboard.html">Dashboard</a>
         <a href="index.html">Home</a>
         <a href="introduction.html">Introduction</a>
@@ -260,7 +260,6 @@
 
     <div class="container">
          <!-- ===== START OF PAGE CONTENT ===== -->
-         <!-- All original H2, P, UL, OL, DIVs, IMG tags -->
         <h2 class="section-title">The Power of Individual Coaching</h2>
         <div class="highlight-section"> <p>Deep down, your team members likely already know the answers to their problems. As a coach, your job is to guide them toward this realization.</p> </div>
         <p>One-on-one coaching is a great way to provide this guidance. It's the most common form of coaching, and it's valuable in many ways. For example, it can help your team members to:</p>
@@ -278,81 +277,64 @@
 
         <!-- Skill/Will Matrix Section -->
         <div class="model-section" id="skill-will-container"> <h3>2. The Skill/Will Matrix</h3> <p>Your team members all have their own needs, personalities, skills and abilities. This means that you will need to tailor your approach to fit each individual.</p> <p>The Skill/Will Matrix, developed by coach and author Max Landsberg in 2003, can enable you to find the appropriate coaching style for every situation.</p> <div class="skill-will-matrix"> <div class="matrix-quadrant guide"> <h4>Guide</h4> <p>(High Will, Low Skill) Motivated but needs direction/training.</p> </div> <div class="matrix-quadrant delegate"> <h4>Delegate</h4> <p>(High Will, High Skill) Capable & motivated - give autonomy.</p> </div> <div class="matrix-quadrant direct"> <h4>Direct</h4> <p>(Low Will, Low Skill) Needs clear instructions & supervision.</p> </div> <div class="matrix-quadrant excite"> <h4>Excite</h4> <p>(Low Will, High Skill) Capable but needs motivation/inspiration.</p> </div> </div>
-            <!-- Action Table Header -->
             <table class="action-table"> <thead> <tr> <th colspan="2">ACTION: Create Your Coaching Map</th> </tr> <tr> <td style="width: 30%; font-weight:bold;">Instructions</td> <td>List your team members and identify where they fall on the Skill/Will Matrix. Only map members you intend to coach. (Complete at least <strong>3 rows</strong> for progress)<span class="required-star">*</span></td> </tr> </thead> </table>
-            <!-- Skill/Will Data Table -->
-            <table class="skill-will-table"> <thead> <tr> <th>Name of Team Member</th> <th>Coaching Map Quadrant</th> </tr> </thead> <tbody> <!-- Rows 1-6 --> <tr data-row-id="team1"> <td data-label="Name"><input type="text" class="editable-answer" placeholder="Enter name" id="team-member1"></td> <td data-label="Quadrant"> <div class="table-input-group"> <select class="editable-answer" id="coaching-map1"> <option value="">Select quadrant...</option> <option value="Guide">Guide</option> <option value="Delegate">Delegate</option> <option value="Direct">Direct</option> <option value="Excite">Excite</option> </select> <div class="answer-buttons"> <button class="save-btn" onclick="saveCombinedAnswer('team1')">Save Row</button> <button class="delete-btn" onclick="deleteCombinedAnswer('team1')">Delete Row</button> </div> </div> <span class="inline-error-message" id="error-team1"></span> <span class="save-status" id="save-status-team1">Saved ✅</span> </td> </tr> <tr data-row-id="team2"> <td data-label="Name"><input type="text" class="editable-answer" placeholder="Enter name" id="team-member2"></td> <td data-label="Quadrant"> <div class="table-input-group"> <select class="editable-answer" id="coaching-map2"> <option value="">Select quadrant...</option> <option value="Guide">Guide</option> <option value="Delegate">Delegate</option> <option value="Direct">Direct</option> <option value="Excite">Excite</option> </select> <div class="answer-buttons"> <button class="save-btn" onclick="saveCombinedAnswer('team2')">Save Row</button> <button class="delete-btn" onclick="deleteCombinedAnswer('team2')">Delete Row</button> </div> </div> <span class="inline-error-message" id="error-team2"></span> <span class="save-status" id="save-status-team2">Saved ✅</span> </td> </tr> <tr data-row-id="team3"> <td data-label="Name"><input type="text" class="editable-answer" placeholder="Enter name" id="team-member3"></td> <td data-label="Quadrant"> <div class="table-input-group"> <select class="editable-answer" id="coaching-map3"> <option value="">Select quadrant...</option> <option value="Guide">Guide</option> <option value="Delegate">Delegate</option> <option value="Direct">Direct</option> <option value="Excite">Excite</option> </select> <div class="answer-buttons"> <button class="save-btn" onclick="saveCombinedAnswer('team3')">Save Row</button> <button class="delete-btn" onclick="deleteCombinedAnswer('team3')">Delete Row</button> </div> </div> <span class="inline-error-message" id="error-team3"></span> <span class="save-status" id="save-status-team3">Saved ✅</span> </td> </tr> <tr data-row-id="team4"> <td data-label="Name"><input type="text" class="editable-answer" placeholder="Enter name" id="team-member4"></td> <td data-label="Quadrant"> <div class="table-input-group"> <select class="editable-answer" id="coaching-map4"> <option value="">Select quadrant...</option> <option value="Guide">Guide</option> <option value="Delegate">Delegate</option> <option value="Direct">Direct</option> <option value="Excite">Excite</option> </select> <div class="answer-buttons"> <button class="save-btn" onclick="saveCombinedAnswer('team4')">Save Row</button> <button class="delete-btn" onclick="deleteCombinedAnswer('team4')">Delete Row</button> </div> </div> <span class="inline-error-message" id="error-team4"></span> <span class="save-status" id="save-status-team4">Saved ✅</span> </td> </tr> <tr data-row-id="team5"> <td data-label="Name"><input type="text" class="editable-answer" placeholder="Enter name" id="team-member5"></td> <td data-label="Quadrant"> <div class="table-input-group"> <select class="editable-answer" id="coaching-map5"> <option value="">Select quadrant...</option> <option value="Guide">Guide</option> <option value="Delegate">Delegate</option> <option value="Direct">Direct</option> <option value="Excite">Excite</option> </select> <div class="answer-buttons"> <button class="save-btn" onclick="saveCombinedAnswer('team5')">Save Row</button> <button class="delete-btn" onclick="deleteCombinedAnswer('team5')">Delete Row</button> </div> </div> <span class="inline-error-message" id="error-team5"></span> <span class="save-status" id="save-status-team5">Saved ✅</span> </td> </tr> <tr data-row-id="team6"> <td data-label="Name"><input type="text" class="editable-answer" placeholder="Enter name" id="team-member6"></td> <td data-label="Quadrant"> <div class="table-input-group"> <select class="editable-answer" id="coaching-map6"> <option value="">Select quadrant...</option> <option value="Guide">Guide</option> <option value="Delegate">Delegate</option> <option value="Direct">Direct</option> <option value="Excite">Excite</option> </select> <div class="answer-buttons"> <button class="save-btn" onclick="saveCombinedAnswer('team6')">Save Row</button> <button class="delete-btn" onclick="deleteCombinedAnswer('team6')">Delete Row</button> </div> </div> <span class="inline-error-message" id="error-team6"></span> <span class="save-status" id="save-status-team6">Saved ✅</span> </td> </tr> </tbody> </table>
-             <!-- Removed individual progress bar -->
+            <table class="skill-will-table"> <thead> <tr> <th>Name of Team Member</th> <th>Coaching Map Quadrant</th> </tr> </thead> <tbody> <tr data-row-id="team1"> <td data-label="Name"><input type="text" class="editable-answer" placeholder="Enter name" id="team-member1"></td> <td data-label="Quadrant"> <div class="table-input-group"> <select class="editable-answer" id="coaching-map1"> <option value="">Select quadrant...</option> <option value="Guide">Guide</option> <option value="Delegate">Delegate</option> <option value="Direct">Direct</option> <option value="Excite">Excite</option> </select> <div class="answer-buttons"> <button class="save-btn" onclick="saveTableRow('team1')">Save Row</button> <button class="delete-btn" onclick="deleteTableRow('team1')">Delete Row</button> </div> </div> <span class="inline-error-message" id="error-team1"></span> <span class="save-status" id="save-status-team1">Saved ✅</span> </td> </tr> <tr data-row-id="team2"> <td data-label="Name"><input type="text" class="editable-answer" placeholder="Enter name" id="team-member2"></td> <td data-label="Quadrant"> <div class="table-input-group"> <select class="editable-answer" id="coaching-map2"> <option value="">Select quadrant...</option> <option value="Guide">Guide</option> <option value="Delegate">Delegate</option> <option value="Direct">Direct</option> <option value="Excite">Excite</option> </select> <div class="answer-buttons"> <button class="save-btn" onclick="saveTableRow('team2')">Save Row</button> <button class="delete-btn" onclick="deleteTableRow('team2')">Delete Row</button> </div> </div> <span class="inline-error-message" id="error-team2"></span> <span class="save-status" id="save-status-team2">Saved ✅</span> </td> </tr> <tr data-row-id="team3"> <td data-label="Name"><input type="text" class="editable-answer" placeholder="Enter name" id="team-member3"></td> <td data-label="Quadrant"> <div class="table-input-group"> <select class="editable-answer" id="coaching-map3"> <option value="">Select quadrant...</option> <option value="Guide">Guide</option> <option value="Delegate">Delegate</option> <option value="Direct">Direct</option> <option value="Excite">Excite</option> </select> <div class="answer-buttons"> <button class="save-btn" onclick="saveTableRow('team3')">Save Row</button> <button class="delete-btn" onclick="deleteTableRow('team3')">Delete Row</button> </div> </div> <span class="inline-error-message" id="error-team3"></span> <span class="save-status" id="save-status-team3">Saved ✅</span> </td> </tr> <tr data-row-id="team4"> <td data-label="Name"><input type="text" class="editable-answer" placeholder="Enter name" id="team-member4"></td> <td data-label="Quadrant"> <div class="table-input-group"> <select class="editable-answer" id="coaching-map4"> <option value="">Select quadrant...</option> <option value="Guide">Guide</option> <option value="Delegate">Delegate</option> <option value="Direct">Direct</option> <option value="Excite">Excite</option> </select> <div class="answer-buttons"> <button class="save-btn" onclick="saveTableRow('team4')">Save Row</button> <button class="delete-btn" onclick="deleteTableRow('team4')">Delete Row</button> </div> </div> <span class="inline-error-message" id="error-team4"></span> <span class="save-status" id="save-status-team4">Saved ✅</span> </td> </tr> <tr data-row-id="team5"> <td data-label="Name"><input type="text" class="editable-answer" placeholder="Enter name" id="team-member5"></td> <td data-label="Quadrant"> <div class="table-input-group"> <select class="editable-answer" id="coaching-map5"> <option value="">Select quadrant...</option> <option value="Guide">Guide</option> <option value="Delegate">Delegate</option> <option value="Direct">Direct</option> <option value="Excite">Excite</option> </select> <div class="answer-buttons"> <button class="save-btn" onclick="saveTableRow('team5')">Save Row</button> <button class="delete-btn" onclick="deleteTableRow('team5')">Delete Row</button> </div> </div> <span class="inline-error-message" id="error-team5"></span> <span class="save-status" id="save-status-team5">Saved ✅</span> </td> </tr> <tr data-row-id="team6"> <td data-label="Name"><input type="text" class="editable-answer" placeholder="Enter name" id="team-member6"></td> <td data-label="Quadrant"> <div class="table-input-group"> <select class="editable-answer" id="coaching-map6"> <option value="">Select quadrant...</option> <option value="Guide">Guide</option> <option value="Delegate">Delegate</option> <option value="Direct">Direct</option> <option value="Excite">Excite</option> </select> <div class="answer-buttons"> <button class="save-btn" onclick="saveTableRow('team6')">Save Row</button> <button class="delete-btn" onclick="deleteTableRow('team6')">Delete Row</button> </div> </div> <span class="inline-error-message" id="error-team6"></span> <span class="save-status" id="save-status-team6">Saved ✅</span> </td> </tr> </tbody> </table>
             <p style="font-size: 0.9em; color: #555;"><span class="required-star">*</span> Complete at least 3 rows (Name and Quadrant) for this section's progress.</p>
         </div>
 
         <!-- Solution-Focused Coaching Section -->
         <div class="model-section"> <h3>3. Solution-Focused Coaching</h3> <p>The Solution-Focused Coaching approach helps you to identify what your team member wants, and how he can achieve it. Your aim is not to examine why a specific problem is occurring, but to find a solution. This helps you to avoid dwelling on the negatives. It's a simple and positive way to coach someone.</p> <div class="solution-model"> <div class="solution-step"> <div class="step-number">1</div> <div><h4>Identify Goal/Solution:</h4><p>Define a clear, specific outcome.</p></div> </div> <div class="solution-step"> <div class="step-number">2</div> <div><h4>Create Plan:</h4><p>Develop actionable steps together.</p></div> </div> <div class="solution-step"> <div class="step-number">3</div> <div><h4>Take Action & Monitor:</h4><p>Implement, track results, adjust.</p></div> </div> <div class="solution-step"> <div class="step-number">4</div> <div><h4>Change What Isn't Working:</h4><p>Adapt based on effectiveness.</p></div> </div> </div>
             <div class="action-card"> <strong>ACTION: Reflect on Solution-Focused Coaching</strong><br> Think about a team member or situation where this approach could be beneficial. Answer the questions below. </div>
-            <!-- Question 1 -->
             <div class="question-item" id="question-container-solution-goal">
                 <div class="question-text">1. What specific goal could you help a team member identify using this approach?<span class="required-star">*</span></div>
                 <textarea class="editable-answer required-answer" data-question="solution-goal" placeholder="e.g., Improve presentation delivery confidence..."></textarea>
-                <div class="answer-buttons"> <button class="save-btn" onclick="saveAnswer('solution-goal')">Save</button> <button class="delete-btn" onclick="deleteAnswer('solution-goal')">Delete</button> <span class="inline-error-message" id="error-solution-goal"></span> </div>
+                <div class="answer-buttons"> <button class="save-btn" onclick="saveStandardAnswer('solution-goal')">Save</button> <button class="delete-btn" onclick="deleteStandardAnswer('solution-goal')">Delete</button> <span class="inline-error-message" id="error-solution-goal"></span> </div>
                 <span class="save-status" id="save-status-solution-goal">Saved ✅</span>
-                <!-- Removed progress bar -->
              </div>
-             <!-- Question 2 -->
             <div class="question-item" id="question-container-solution-plan">
                 <div class="question-text">2. How would you help them create an effective action plan (Step 2)?<span class="required-star">*</span></div>
                 <textarea class="editable-answer required-answer" data-question="solution-plan" placeholder="e.g., Break goal into smaller steps..."></textarea>
-                <div class="answer-buttons"> <button class="save-btn" onclick="saveAnswer('solution-plan')">Save</button> <button class="delete-btn" onclick="deleteAnswer('solution-plan')">Delete</button> <span class="inline-error-message" id="error-solution-plan"></span> </div>
+                <div class="answer-buttons"> <button class="save-btn" onclick="saveStandardAnswer('solution-plan')">Save</button> <button class="delete-btn" onclick="deleteStandardAnswer('solution-plan')">Delete</button> <span class="inline-error-message" id="error-solution-plan"></span> </div>
                 <span class="save-status" id="save-status-solution-plan">Saved ✅</span>
-                <!-- Removed progress bar -->
              </div>
         </div>
 
-        <!-- Building Trust Section -->
         <h2 class="section-title">2.2 Setting up a Coaching Relationship</h2>
         <p>Trust and rapport are two of the most important aspects of a successful coaching relationship. Without them, your team member is unlikely to share his thoughts and feelings with you.</p>
         <div class="trust-section"> <h3>Building Trust</h3> <p>Key ways to develop trust:</p> <ul style="margin-left: 25px; list-style: disc;"> <li><strong>Demonstrate Credibility:</strong> Show confidence, competence, and honesty. Admit when you don't know something but commit to finding answers together.</li> <li><strong>Show Reliability:</strong> Be dependable. Keep commitments, be punctual, and respect expectations.</li> <li><strong>Foster Comfort:</strong> Create a safe space. Share appropriately about yourself (values, experiences) to build connection.</li> <li><strong>Show You Care:</strong> Demonstrate genuine interest in the coachee's well-being and development, beyond just work tasks. Be patient and committed.</li> </ul> </div>
 
-        <!-- Building Rapport Section -->
         <div class="rapport-section"> <h3>Building Rapport</h3> <p>Building rapport involves finding common ground. Explore these levels:</p> <ol style="margin-left: 25px;"> <li><strong>Environment:</strong> Shared context (work, location, etc.).</li> <li><strong>Behavior:</strong> Similar activities or interests.</li> <li><strong>Capability:</strong> Shared skills or abilities.</li> <li><strong>Beliefs:</strong> Common values or principles.</li> <li><strong>Identity:</strong> Shared sense of self or group affiliation.</li> <li><strong>Spirit:</strong> Similar outlook or higher purpose (use cautiously).</li> </ol> </div>
 
-        <!-- Informal Coaching Section -->
         <h2 class="section-title">2.3 Informal Coaching</h2>
         <p>You don't have to wait for a structured session to use your coaching skills. Good coaches engage with their team members daily or weekly.</p>
         <div class="informal-tips"> <h3>Tips for Informal Coaching:</h3> <ul style="margin-left: 25px; list-style: disc;"> <li><strong>Monitor Workloads:</strong> Offer support during busy times or when priorities seem unclear.</li> <li><strong>Be Aware of Moods:</strong> Notice changes in behavior or body language as potential coaching moments.</li> <li><strong>Ask Permission:</strong> Check if it's a good time before launching into a coaching conversation.</li> <li><strong>Ask, Don't Tell:</strong> Focus on questions and listening, rather than giving advice or instructions. Avoid "I think...".</li> <li><strong>Use Informal Settings:</strong> Coffee breaks or casual chats can be effective, maintaining professionalism while being relaxed.</li> </ul> </div>
         <div class="media-container"> <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Casual coaching conversation" loading="lazy"> <p class="caption">Informal coaching often happens spontaneously...</p> </div>
         <div class="action-card"> <strong>ACTION: Practice Informal Coaching</strong><br> Identify an opportunity... Answer the questions below. </div>
 
-        <!-- Informal Coaching Questions -->
         <div class="question-item" id="question-container-informal-initiate">
              <div class="question-text">1. How did you initiate the informal coaching conversation?<span class="required-star">*</span></div>
              <textarea class="editable-answer required-answer" data-question="informal-initiate" placeholder="e.g., 'Noticed you seemed stuck...'"></textarea>
-             <div class="answer-buttons"> <button class="save-btn" onclick="saveAnswer('informal-initiate')">Save</button> <button class="delete-btn" onclick="deleteAnswer('informal-initiate')">Delete</button> <span class="inline-error-message" id="error-informal-initiate"></span> </div>
+             <div class="answer-buttons"> <button class="save-btn" onclick="saveStandardAnswer('informal-initiate')">Save</button> <button class="delete-btn" onclick="deleteStandardAnswer('informal-initiate')">Delete</button> <span class="inline-error-message" id="error-informal-initiate"></span> </div>
              <span class="save-status" id="save-status-informal-initiate">Saved ✅</span>
-             <!-- Removed progress bar -->
          </div>
         <div class="question-item" id="question-container-informal-benefit">
             <div class="question-text">2. What clues suggested the person might benefit...?<span class="required-star">*</span></div>
             <textarea class="editable-answer required-answer" data-question="informal-benefit" placeholder="e.g., Body language..."></textarea>
-            <div class="answer-buttons"> <button class="save-btn" onclick="saveAnswer('informal-benefit')">Save</button> <button class="delete-btn" onclick="deleteAnswer('informal-benefit')">Delete</button> <span class="inline-error-message" id="error-informal-benefit"></span> </div>
+            <div class="answer-buttons"> <button class="save-btn" onclick="saveStandardAnswer('informal-benefit')">Save</button> <button class="delete-btn" onclick="deleteStandardAnswer('informal-benefit')">Delete</button> <span class="inline-error-message" id="error-informal-benefit"></span> </div>
             <span class="save-status" id="save-status-informal-benefit">Saved ✅</span>
-             <!-- Removed progress bar -->
          </div>
         <div class="question-item" id="question-container-informal-receptive">
              <div class="question-text">3. Was your team member receptive? How did you gauge this?<span class="required-star">*</span></div>
              <textarea class="editable-answer required-answer" data-question="informal-receptive" placeholder="e.g., Yes, they opened up..."></textarea>
-             <div class="answer-buttons"> <button class="save-btn" onclick="saveAnswer('informal-receptive')">Save</button> <button class="delete-btn" onclick="deleteAnswer('informal-receptive')">Delete</button> <span class="inline-error-message" id="error-informal-receptive"></span> </div>
+             <div class="answer-buttons"> <button class="save-btn" onclick="saveStandardAnswer('informal-receptive')">Save</button> <button class="delete-btn" onclick="deleteStandardAnswer('informal-receptive')">Delete</button> <span class="inline-error-message" id="error-informal-receptive"></span> </div>
              <span class="save-status" id="save-status-informal-receptive">Saved ✅</span>
-             <!-- Removed progress bar -->
         </div>
          <p style="font-size: 0.9em; color: #555;"><span class="required-star">*</span> Required field to proceed.</p>
 
-        <!-- Drawing Together Section -->
         <h2 class="section-title">2.4 Drawing This Together</h2>
         <div class="drawing-together"> <div class="drawing-icon">✓</div> <div> <p>In this chapter, we discussed how to coach an individual member of your team. We outlined several models (GROW, Skill/Will, Solution-Focused) to guide your approach, and found out how to get your coaching relationships off to a great start by building trust and rapport. We also explored the value of informal coaching opportunities.</p> <p>The next chapter focuses on how to coach a team. We'll look at how group coaching works, and examine several models and processes that you can use to do it.</p> </div> </div>
 
-        <!-- Navigation Buttons -->
         <div class="button-container"> <a href="coaching-skills.html" class="button back">← Back to Coaching Skills</a> <button type="button" class="button" id="nextButton">Next: Team Coaching →</button> </div>
-         <!-- ===== END OF PAGE CONTENT ===== -->
     </div>
 
     <script>
@@ -361,24 +343,21 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlZmlpZ290dG5sY21qemlscW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcxNzY2MDQsImV4cCI6MjA2Mjc1MjYwNH0.FypB02v3tGMnxXV9ZmZMdMC0oQpREKOJWgHMPxUzwX4';
         let supabase = null;
 
-        // --- Configuration ---
         const localStorageKey = 'allUserAnswers_coachingIndividuals';
         const SECTION_ID = 'individuals';
         const PAGE_NAME = 'coaching-individuals.html';
-        const REQUIRED_TABLE_ROWS = 3; // Requirement for Skill/Will table
+        const REQUIRED_TABLE_ROWS = 3; 
 
-        // --- Unified Keys ---
         const LOGGED_IN_KEY = 'isUserLoggedIn';
         const CURRENT_USER_KEY = 'currentUser';
 
-        // --- Required Question IDs for Progress Bar ---
-        const requiredQuestionIds = [
-             'solution-goal', 'solution-plan', // Solution-Focused questions
-             'informal-initiate', 'informal-benefit', 'informal-receptive' // Informal Coaching questions
-             // The Skill/Will table requirement (3 rows) is handled separately in progress calculation
+        const requiredStandardQuestionIds = [
+             'solution-goal', 'solution-plan',
+             'informal-initiate', 'informal-benefit', 'informal-receptive'
         ];
+        const MIN_ANSWER_LENGTH_FOR_PASS = 25;
 
-         // Initialize Supabase Client
+
          try {
              if (window.supabase && window.supabase.createClient) {
                  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -386,134 +365,133 @@
              } else { throw new Error("Supabase library not found."); }
          } catch (error) { console.error("CRITICAL ERROR initializing Supabase:", error); }
 
-        // --- Initialization ---
         document.addEventListener('DOMContentLoaded', function() {
              console.log(`%c${PAGE_NAME}: DOMContentLoaded event fired.`, "color: green;");
-             if (!supabase) {
-                 console.error(`Supabase client failed to initialize on ${PAGE_NAME}.`);
-             }
+             if (!supabase) console.error(`Supabase client failed to initialize on ${PAGE_NAME}.`);
+             
              const currentUser = getCurrentUser();
               if (!currentUser || !currentUser.id || !currentUser.email) {
-                 console.error(`%c${PAGE_NAME}: User not logged in or essential data missing. Redirecting...`, "color: red;");
+                 console.error(`%c${PAGE_NAME}: User not logged in. Redirecting...`, "color: red;");
                   if (!window.location.search.includes('redir_attempt')) { window.location.href = `login.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}&redir_attempt=1`; }
-                  else { console.error("REDIRECTION LOOP DETECTED."); document.body.innerHTML = '<p style="color: red; padding: 20px;">Login check failed repeatedly.</p>'; }
+                  else { console.error("REDIRECTION LOOP."); document.body.innerHTML = '<p style="color:red;padding:20px;">Login check failed.</p>'; }
                  return;
              }
-             console.log(`%c${PAGE_NAME}: User validated (${currentUser.email}, ID: ${currentUser.id}). Initializing.`, "color: green;");
+             console.log(`%c${PAGE_NAME}: User validated. Initializing.`, "color: green;");
              displayUserInfo(currentUser);
-             loadUserAnswers(currentUser);
-             updateStickyProgressBar(); // Initial progress calculation
+             loadAllAnswers(currentUser); // Renamed for clarity
+             updateStickyProgressBar(); 
              setupEventListeners(currentUser);
              highlightActiveNav();
              setupMobileTableLabels();
              console.log(`%c${PAGE_NAME}: Initialization complete.`, "color: blue;");
         });
 
-        // --- User Info & Auth ---
         function getCurrentUser() { try { const d = localStorage.getItem(CURRENT_USER_KEY); if (!d) return null; const p = JSON.parse(d); if (p && typeof p === 'object' && p.email && p.name && p.id) { if (typeof p.progress !== 'object' || p.progress === null) p.progress = {}; return p; } else { localStorage.removeItem(CURRENT_USER_KEY); localStorage.removeItem(LOGGED_IN_KEY); return null; } } catch (e) { console.error("GUC Error:", e); localStorage.removeItem(CURRENT_USER_KEY); localStorage.removeItem(LOGGED_IN_KEY); return null; } }
         function saveCurrentUser(userObject) { try { if (!userObject || typeof userObject !== 'object') throw new Error("Invalid user object"); localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userObject)); } catch (error) { console.error("SCU Error:", error); } }
         function displayUserInfo(user) { if(!user) return; document.getElementById('userName').textContent=`Welcome, ${user.name || user.email.split('@')[0]}`; document.getElementById('userEmail').textContent=user.email;}
-        function logout() { localStorage.removeItem(LOGGED_IN_KEY); localStorage.removeItem(CURRENT_USER_KEY); localStorage.removeItem(localStorageKey); window.location.href = 'login.html';} // Clear page answers
+        function logout() { localStorage.removeItem(LOGGED_IN_KEY); localStorage.removeItem(CURRENT_USER_KEY); localStorage.removeItem(localStorageKey); window.location.href = 'login.html';} 
         function highlightActiveNav() { const cP=window.location.pathname.split('/').pop()||PAGE_NAME; document.querySelectorAll('.nav-tab a').forEach(l=>{const lP=(l.getAttribute('href')||'').split('/').pop(); l.classList.toggle('active',lP===cP);}); }
         function setupMobileTableLabels() { document.querySelectorAll('table:not(.action-table) tbody tr').forEach(r=>{try{const h=Array.from(r.closest('table').querySelectorAll('thead th')).map(th=>th.textContent); r.querySelectorAll('td').forEach((t,i)=>t.setAttribute('data-label',h[i]||''));}catch(e){console.warn('Error setting mobile labels',e)}});}
 
-
-        // --- Answer Handling (Local Storage & UI Locking) ---
-        function loadUserAnswers(currentUser) {
+        function loadAllAnswers(currentUser) {
             if (!currentUser || !currentUser.email) return;
-            let allAnswers = {};
-            try { const d = localStorage.getItem(localStorageKey); if (d) allAnswers = JSON.parse(d) || {}; }
+            let allUserPageAnswers = {};
+            try { const d = localStorage.getItem(localStorageKey); if (d) allUserPageAnswers = JSON.parse(d) || {}; }
             catch(e) { console.error("Load Answers Error:", e); }
-            const userAnswers = allAnswers[currentUser.email] || {};
+            const userAnswers = allUserPageAnswers[currentUser.email] || {};
 
-            // Load textareas (using data-question)
             document.querySelectorAll('.question-item textarea.editable-answer').forEach(field => {
                  const qId = field.dataset.question;
-                 loadFieldState(field, qId, userAnswers);
+                 loadIndividualFieldState(field, qId, userAnswers, false); // false for isTableField
             });
-
-             // Load Skill/Will table state (using IDs)
-             loadTableState(userAnswers);
-
-            // updateStickyProgressBar() called after this in DOMContentLoaded
+            for (let i = 1; i <= 6; i++) {
+                 const nameField = document.getElementById(`team-member${i}`);
+                 const mapField = document.getElementById(`coaching-map${i}`);
+                 if (nameField) loadIndividualFieldState(nameField, nameField.id, userAnswers, true); // true for isTableField
+                 if (mapField) loadIndividualFieldState(mapField, mapField.id, userAnswers, true);   // true for isTableField
+            }
         }
 
-        // Modified loadFieldState for 'Save Once' behavior
-        function loadFieldState(field, questionId, userAnswers) {
+        function loadIndividualFieldState(field, questionId, userAnswers, isTableField) {
             if (!field) return;
-            const effectiveQuestionId = field.id || questionId; // Use ID if present (table), else data-question
-            const errorId = `error-${rowIdentifierFromQuestionId(effectiveQuestionId) || effectiveQuestionId}`;
-            const statusId = `save-status-${rowIdentifierFromQuestionId(effectiveQuestionId) || effectiveQuestionId}`; // Match status ID structure
+            const rowIdPart = isTableField ? `team${questionId.match(/(\d+)$/)?.[1]}` : questionId;
+            const errorId = `error-${rowIdPart}`;
+            const statusId = `save-status-${rowIdPart}`;
             const statusElement = document.getElementById(statusId);
-            const buttonGroup = field.closest('td')?.querySelector('.answer-buttons') || field.closest('.question-item')?.querySelector('.answer-buttons');
+            const buttonGroup = field.closest(isTableField ? 'td' : '.question-item')
+                                 ?.querySelector(isTableField ? '.answer-buttons' : '.answer-buttons'); // Adjusted querySelector
             const saveButton = buttonGroup?.querySelector('.save-btn');
             const deleteButton = buttonGroup?.querySelector('.delete-btn');
 
             hideError(errorId);
             if (statusElement) statusElement.style.display = 'none';
 
-            if (userAnswers[effectiveQuestionId] !== undefined && userAnswers[effectiveQuestionId] !== null && String(userAnswers[effectiveQuestionId]).trim() !== '') {
-                // --- Saved Answer Found ---
-                field.value = userAnswers[effectiveQuestionId];
+            if (userAnswers[questionId] !== undefined && userAnswers[questionId] !== null && String(userAnswers[questionId]).trim() !== '') {
+                field.value = userAnswers[questionId];
                 field.disabled = true;
                 field.classList.remove('required-field');
-                if (buttonGroup) buttonGroup.style.display = 'none'; // Hide buttons
-                if (statusElement) { // Show status
-                    statusElement.textContent = 'Saved ✅';
-                    if (field.closest('.skill-will-table')) statusElement.textContent = 'Row Saved ✅'; // Specific text for table row
-                    statusElement.style.display = 'inline-block';
-                    statusElement.classList.remove('deleted'); statusElement.style.color = '#27ae60';
+                
+                // For table rows, hide buttons only if BOTH fields in the row are saved
+                if (isTableField) {
+                    const siblingId = questionId.startsWith('team-member') ? questionId.replace('team-member', 'coaching-map') : questionId.replace('coaching-map', 'team-member');
+                    const siblingIsSaved = userAnswers[siblingId] !== undefined && userAnswers[siblingId] !== null && String(userAnswers[siblingId]).trim() !== '';
+                    if (siblingIsSaved && buttonGroup) {
+                        buttonGroup.style.display = 'none';
+                         if(statusElement) { // Show "Row Saved" only when both are done
+                            statusElement.textContent = 'Row Saved ✅';
+                            statusElement.style.display = 'inline-block';
+                            statusElement.classList.remove('deleted'); statusElement.style.color = '#27ae60';
+                        }
+                    } else if (buttonGroup) { // One part of row saved, but not other, keep buttons for row
+                        buttonGroup.style.display = 'flex';
+                        if (saveButton) {saveButton.disabled = false; saveButton.textContent = 'Save Row';}
+                        if (deleteButton) {deleteButton.disabled = false; deleteButton.textContent = 'Delete Row';}
+                         if(statusElement) statusElement.style.display = 'none'; // Don't show "Row Saved" yet
+                    }
+                } else { // For standard questions
+                    if (buttonGroup) buttonGroup.style.display = 'none';
+                    if (statusElement) {
+                        statusElement.textContent = 'Saved ✅';
+                        statusElement.style.display = 'inline-block';
+                        statusElement.classList.remove('deleted'); statusElement.style.color = '#27ae60';
+                    }
                 }
             } else {
-                // --- No Saved Answer ---
-                 field.value = (field.tagName === 'SELECT') ? '' : ''; // Reset field value
+                 field.value = (field.tagName === 'SELECT') ? '' : ''; 
                  field.disabled = false;
                  field.classList.remove('required-field');
-                if (buttonGroup) { // Show buttons
+                if (buttonGroup) { 
                     buttonGroup.style.display = 'flex';
-                    if (saveButton) { saveButton.disabled = false; saveButton.textContent = field.closest('.skill-will-table') ? 'Save Row' : 'Save'; }
-                    if (deleteButton) { deleteButton.disabled = false; deleteButton.style.display = 'inline-block'; deleteButton.textContent = field.closest('.skill-will-table') ? 'Delete Row' : 'Delete';}
+                    if (saveButton) { saveButton.disabled = false; saveButton.textContent = isTableField ? 'Save Row' : 'Save'; }
+                    if (deleteButton) { deleteButton.disabled = false; deleteButton.style.display = 'inline-block'; deleteButton.textContent = isTableField ? 'Delete Row' : 'Delete';}
                 }
-                if (statusElement) statusElement.style.display = 'none'; // Hide status
+                if (statusElement) statusElement.style.display = 'none'; 
             }
-        }
-
-        // Load state for Skill/Will table
-        function loadTableState(userAnswers) {
-             for (let i = 1; i <= 6; i++) {
-                 const nameId = `team-member${i}`; const mapId = `coaching-map${i}`;
-                 const nameField = document.getElementById(nameId); const mapField = document.getElementById(mapId);
-                 if (nameField) loadFieldState(nameField, nameId, userAnswers); // Pass ID
-                 if (mapField) loadFieldState(mapField, mapId, userAnswers);   // Pass ID
-             }
-             // updateStickyProgressBar() handles overall progress display later
         }
 
         function saveAnswerToStorage(userEmail, questionId, answer) { if(!userEmail) return false; let a={}; try{const d=localStorage.getItem(localStorageKey); if(d) a=JSON.parse(d)||{};}catch(e){a={};} if(!a[userEmail]) a[userEmail]={}; a[userEmail][questionId]=answer; try{localStorage.setItem(localStorageKey,JSON.stringify(a)); return true;} catch(e){console.error("Save Storage Err:",e); return false;} }
         function deleteAnswerFromStorage(userEmail, questionId) { if(!userEmail) return false; let a={}; try{const d=localStorage.getItem(localStorageKey); if(d) a=JSON.parse(d)||{}; else return false;} catch(e){return false;} let u=false; if(a[userEmail]?.[questionId]!==undefined){delete a[userEmail][questionId]; u=true; if(Object.keys(a[userEmail]).length===0) delete a[userEmail];} if(u){try{localStorage.setItem(localStorageKey,JSON.stringify(a)); return true;}catch(e){return false;}} return false; }
 
-        // --- Event Listeners Setup ---
         function setupEventListeners(currentUser) {
             if (!currentUser?.email) return;
-            // Combine listeners for efficiency
             document.querySelectorAll('.editable-answer').forEach(field => {
                 const eventType = (field.tagName === 'SELECT') ? 'change' : 'input';
                 field.addEventListener(eventType, function() {
-                    const questionId = field.id || field.dataset.question;
-                    const errorId = `error-${rowIdentifierFromQuestionId(questionId) || questionId}`;
+                    const questionId = field.id || field.dataset.question; // Use ID for table fields
+                    const isTableField = !!field.id; // True if field has an ID (i.e., is a table field)
+                    const rowIdPart = isTableField ? `team${questionId.match(/(\d+)$/)?.[1]}` : questionId;
+                    const errorId = `error-${rowIdPart}`;
+                    
                     hideError(errorId);
                     if (this.value.trim() !== '') this.classList.remove('required-field');
 
-                    // Re-enable save button if typing/changing
                     if (!this.disabled) {
-                         const buttonGroup = this.closest('td')?.querySelector('.answer-buttons') || this.closest('.question-item')?.querySelector('.answer-buttons');
+                         const buttonGroup = field.closest(isTableField ? 'td' : '.question-item')
+                                             ?.querySelector(isTableField ? '.answer-buttons' : '.answer-buttons');
                          const saveButton = buttonGroup?.querySelector('.save-btn');
-                         if(saveButton) saveButton.disabled = false;
+                         if(saveButton) saveButton.disabled = false; // Always re-enable its own save button on input
                     }
-
-                    // Clear combined table error if row becomes valid
-                     const tableRow = this.closest('tr[data-row-id]');
-                     if(tableRow) clearTableErrorIfRowComplete(tableRow.dataset.rowId);
+                    if(isTableField) clearTableErrorIfRowComplete(rowIdPart);
                 });
             });
             const nextButton = document.getElementById('nextButton');
@@ -521,17 +499,13 @@
         }
 
         function handleNextButtonClick(e) { if (!validateAllAnswers(true)) { e.preventDefault(); showGeneralWarningMessage(); } else { window.location.href = 'coaching-team.html'; } }
-        function rowIdentifierFromQuestionId(questionId) { if(questionId.startsWith('team-member')||questionId.startsWith('coaching-map')){return `team${questionId.match(/(\d+)$/)?.[1]}`; } return null; }
         function clearTableErrorIfRowComplete(rowId) { const errorId = `error-${rowId}`; const nameField = document.getElementById(`team-member${rowId.replace('team','')}`); const mapField = document.getElementById(`coaching-map${rowId.replace('team','')}`); if(nameField?.value.trim()!=='' && mapField?.value.trim()!==''){ hideError(errorId); nameField.classList.remove('required-field'); mapField.classList.remove('required-field');}}
 
-        // --- UI Feedback & Validation ---
         function validateAllAnswers(showErrors = false) {
              let allValid = true; let firstInvalidField = null;
-             console.log(`Running validation (Show Errors: ${showErrors})`);
              hideWarningMessage();
 
-             // Check standard required fields (using the array)
-             requiredQuestionIds.forEach(qId => {
+             requiredStandardQuestionIds.forEach(qId => {
                  const field = document.querySelector(`.required-answer[data-question="${qId}"]`);
                  if (field) {
                      const eId = `error-${qId}`;
@@ -541,82 +515,98 @@
                          if (showErrors) showError(eId, field);
                          if (!firstInvalidField) firstInvalidField = field;
                      }
-                 } else {
-                      console.warn(`Required field ${qId} not found for validation.`);
-                      allValid = false;
-                 }
+                 } else { allValid = false; }
              });
 
-            // Check Skill/Will Table Requirement
-             if (!checkSkillWillCompletion()) { // Check based on localStorage state
+             if (!checkSkillWillTableCompletion()) { 
                   allValid = false;
-                  console.log("Skill/Will Table validation failed (count < 3).");
                   if (showErrors) {
-                      // Try to find the first *enabled and empty* row to highlight or show general msg
-                      let firstEmptyRowField = null;
+                      let firstEmptyTableRowField = null;
                       for (let i = 1; i <= 6; i++) {
                            const nameField = document.getElementById(`team-member${i}`);
                            const mapField = document.getElementById(`coaching-map${i}`);
-                           if (nameField && !nameField.disabled && mapField && !mapField.disabled && (!nameField.value.trim() || !mapField.value.trim())) {
-                                const rowErrorId = `error-team${i}`;
-                                showError(rowErrorId, null, `Complete at least ${REQUIRED_TABLE_ROWS} rows.`);
-                                if (!nameField.value.trim()) nameField.classList.add('required-field');
-                                if (!mapField.value.trim()) mapField.classList.add('required-field');
-                                if (!firstInvalidField) firstInvalidField = nameField || mapField;
-                                break; // Show error for the first incomplete row only
+                           const rowErrorId = `error-team${i}`;
+                           // If row is intended to be filled (i.e., at least one field has value or is not disabled AND the other is empty)
+                           // OR if it's one of the first REQUIRED_TABLE_ROWS and is empty
+                           const isAmongFirstRequired = i <= REQUIRED_TABLE_ROWS;
+                           const nameIsEmptyAndEnabled = nameField && !nameField.disabled && !nameField.value.trim();
+                           const mapIsEmptyAndEnabled = mapField && !mapField.disabled && !mapField.value.trim();
+
+                           if ((nameIsEmptyAndEnabled || mapIsEmptyAndEnabled) && (nameField.value.trim() || mapField.value.trim() || isAmongFirstRequired)) {
+                                showError(rowErrorId, null, `Complete both fields for row ${i}. (Need ${REQUIRED_TABLE_ROWS} filled rows total)`);
+                                if (nameIsEmptyAndEnabled) nameField.classList.add('required-field');
+                                if (mapIsEmptyAndEnabled) mapField.classList.add('required-field');
+                                if (!firstInvalidField) firstInvalidField = nameIsEmptyAndEnabled ? nameField : mapField;
+                                // Only show error for the first such incomplete row among the potentially filled ones or first 3
+                                break; 
                            }
                       }
-                      // If no specific empty row found to highlight, show general warning
-                      if (!firstInvalidField && allValid) { // Only show table general warning if other fields are valid
-                           showGeneralWarningMessage(`Please complete at least ${REQUIRED_TABLE_ROWS} rows in the Coaching Map table.`);
-                           const firstTableInput = document.querySelector('.skill-will-table .editable-answer:not(:disabled)');
-                           if (firstTableInput && !firstInvalidField) firstInvalidField = firstTableInput;
-                      }
+                       if (!firstInvalidField && allValid) { // Only show general if other fields are fine AND table not met
+                            showGeneralWarningMessage(`Please complete at least ${REQUIRED_TABLE_ROWS} rows in the Coaching Map table.`);
+                            const firstTableInput = document.querySelector('.skill-will-table .editable-answer:not(:disabled)');
+                            if (firstTableInput && !firstInvalidField) firstInvalidField = firstTableInput;
+                       }
                   }
              } else {
-                  // Clear table row errors if requirement is met
                    for (let i = 1; i <= 6; i++) { hideError(`error-team${i}`); }
              }
 
-
              if (!allValid && showErrors && firstInvalidField) { firstInvalidField.scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(()=>firstInvalidField.focus({preventScroll:true}),350); showGeneralWarningMessage(); }
              else if (!allValid && showErrors) { showGeneralWarningMessage(); }
-
-             console.log("Validation result:", allValid);
              return allValid;
         }
-
 
         function showGeneralWarningMessage(message = "Please complete all required fields marked with *.") { const w=document.getElementById('generalWarningMessage'); if(!w) return; w.innerHTML=`<strong>Action Required:</strong> ${message}`; w.style.animation='none'; void w.offsetWidth; w.style.display='block'; w.style.animation='slideDownFadeInWarn 0.4s ease-out'; clearTimeout(w.timer); w.timer=setTimeout(()=>{w.style.animation='fadeOutUpWarn 0.5s ease-out forwards'; setTimeout(()=>{if(w.style.animationName==='fadeOutUpWarn'){w.style.display='none'; w.style.animation='';}},500);},4000); }
         function hideWarningMessage() { const w=document.getElementById('generalWarningMessage'); if(w && w.style.display !== 'none'){ w.style.animation='fadeOutUpWarn 0.5s ease-out forwards'; setTimeout(()=>{if(w.style.animationName==='fadeOutUpWarn'){w.style.display='none'; w.style.animation='';}},500);}}
         function showError(errorId, fieldToFocus, message = 'Required field.') { const e=document.getElementById(errorId); if(!e) return; e.textContent=message; const aC=e.closest('.action-card'); if(aC) e.style.color='#f8d7da'; else e.style.color='#e74c3c'; e.style.display='inline-block'; if(fieldToFocus) fieldToFocus.classList.add('required-field'); }
         function hideError(errorId) { const e=document.getElementById(errorId); if(e) e.style.display='none';}
-        function hideMessages(errorId, field) { hideError(errorId); if(field) field.classList.remove('required-field'); }
+        
+        async function _saveIndividualAnswer(currentUser, questionId, questionText, answer, sectionType, isTableField = false) {
+            const trimmedAnswer = String(answer).trim(); // Ensure answer is a string before trimming
+            let isPassed = null;
+            if (sectionType === 'article') {
+                isPassed = trimmedAnswer.length >= MIN_ANSWER_LENGTH_FOR_PASS ? true : null;
+            } else if (sectionType === 'table_row_text') { // For team member name
+                isPassed = trimmedAnswer.length >= MIN_ANSWER_LENGTH_FOR_PASS ? true : null;
+            } else if (sectionType === 'table_row_select') { // For quadrant
+                isPassed = trimmedAnswer !== '' ? true : null;
+            }
 
+            const payload = {
+                user_id: currentUser.id, email: currentUser.email, question_id: questionId,
+                question_text: questionText, answer: answer, page: PAGE_NAME,
+                status: 'completed', submitted_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+                section_type: sectionType, section_id: isTableField ? 'skill-will-table' : SECTION_ID,
+                section_title: isTableField ? 'Skill/Will Matrix Entry' : (document.title || 'Coaching Individuals'),
+                progress_percentage: 100,
+                score: 0, // SCORE IS 0
+                is_passed: isPassed // CALCULATED IS_PASSED
+            };
+            console.log(`Payload for ${questionId}:`, payload);
+            return supabase.from('user_progress').upsert([payload], { onConflict: ['user_id', 'question_id'] }).select();
+        }
 
-        // --- Actions (Save, Delete for Textareas/Standard Inputs) ---
-        window.saveAnswer = async function(questionId) {
+        window.saveStandardAnswer = async function(questionId) {
             if (!supabase) { alert('Database connection error.'); return; }
             const currentUser = getCurrentUser(); if (!currentUser?.email || !currentUser.id) { alert('Session expired.'); return; }
 
             const field = document.querySelector(`[data-question="${questionId}"]`);
             const questionContainer = field?.closest('.question-item');
             const errorId = `error-${questionId}`;
-            const statusId = `save-status-${questionId}`;
+            const statusId = `save-status-${questionId}`; // Standard status ID
             const statusElement = document.getElementById(statusId);
             const buttonGroup = questionContainer?.querySelector('.answer-buttons');
             const saveButton = buttonGroup?.querySelector('.save-btn');
             const deleteButton = buttonGroup?.querySelector('.delete-btn');
 
-            if (!field || !questionContainer || !buttonGroup || !saveButton || !deleteButton) { console.error("Save Error: Elements missing for", questionId); return; }
-            if (field.disabled) { console.warn("Attempted save on disabled field:", questionId); return; }
+            if (!field || !questionContainer || !buttonGroup || !saveButton || !deleteButton) { console.error("Save Error (Standard): Elements missing for", questionId); return; }
+            if (field.disabled) { console.warn("Attempted save on disabled field (Standard):", questionId); return; }
 
-            const answer = field.value; 
-            const trimmedAnswer = answer.trim();
+            const answer = field.value; const trimmedAnswer = answer.trim();
             const isRequired = field.classList.contains('required-answer');
 
             hideError(errorId); 
-            if (statusElement) statusElement.style.display = 'none'; 
+            if (statusElement) statusElement.style.display = 'none';
 
             if (isRequired && trimmedAnswer === '') { showError(errorId, field); updateStickyProgressBar(); return; }
 
@@ -625,38 +615,20 @@
             try {
                 const qTextElement = questionContainer.querySelector('.question-text');
                 const questionText = qTextElement ? qTextElement.textContent.replace('*','').trim() : 'Unknown Question Text';
-                const submissionTime = new Date().toISOString();
-                const sectionType = 'article'; // For standard text questions
-
-                const userProgressPayload = { 
-                    user_id: currentUser.id, email: currentUser.email, question_id: questionId, 
-                    question_text: questionText, answer: answer, page: PAGE_NAME, 
-                    status: 'completed', submitted_at: submissionTime, updated_at: submissionTime, 
-                    section_type: sectionType, 
-                    section_id: SECTION_ID, 
-                    section_title: document.title || 'Coaching Individuals', 
-                    progress_percentage: 100, // Number
-                    score: 0, // Number
-                    is_passed: (sectionType === 'article' && trimmedAnswer.length >= 25) ? true : null // Boolean or null
-                };
                 
-                console.log('Payload for standard question to Supabase:', userProgressPayload); // Diagnostic log
+                const { data, error } = await _saveIndividualAnswer(currentUser, questionId, questionText, answer, 'article');
 
-                const { data, error } = await supabase.from('user_progress').upsert([userProgressPayload], { onConflict: ['user_id', 'question_id'] }).select();
-                if (error) {
-                    console.error('Supabase upsert error for standard question:', error);
-                    throw new Error(`Supabase error: ${error.message}`);
-                }
-                console.log("Supabase upsert successful for standard question:", data);
+                if (error) throw new Error(`Supabase error (Standard): ${error.message}`);
+                console.log("Supabase upsert successful (Standard):", data);
 
                 field.disabled = true; field.classList.remove('required-field');
                 buttonGroup.style.display = 'none'; 
-                if (statusElement) { statusElement.textContent = 'Saved ✅'; statusElement.style.display = 'inline-block'; } 
+                if (statusElement) { statusElement.textContent = 'Saved ✅'; statusElement.style.display = 'inline-block'; }
                 saveAnswerToStorage(currentUser.email, questionId, answer);
-                updateStickyProgressBar(); 
+                updateStickyProgressBar();
 
             } catch (error) {
-                // Error already logged
+                console.error(`Failed to save (Standard) ${questionId}:`, error);
                 showError(errorId, field, `Save failed. Check console.`);
                 buttonGroup.style.display = 'flex'; 
                 saveButton.disabled = false; saveButton.textContent = 'Save';
@@ -666,184 +638,176 @@
                 updateStickyProgressBar();
             }
         };
-
-        window.deleteAnswer = function(questionId) { 
+        
+        window.deleteStandardAnswer = function(questionId) { 
             const field = document.querySelector(`[data-question="${questionId}"]`);
-             if (!field || field.disabled) { console.warn(`Cannot delete saved/disabled answer: ${questionId}`); const errorId = `error-${questionId}`; showError(errorId, null, "Saved answers cannot be deleted."); setTimeout(() => hideError(errorId), 3000); return; }
-             const currentUser = getCurrentUser(); if (!currentUser?.email) return;
-             const errorId = `error-${questionId}`; const statusId = `save-status-${questionId}`; const statusElement = document.getElementById(statusId);
-             hideMessages(errorId, field); field.value = ''; if(statusElement) statusElement.style.display = 'none';
-             deleteAnswerFromStorage(currentUser.email, questionId); console.log("Cleared unsaved answer locally for", questionId);
+             if (!field || field.disabled) { console.warn(`Cannot delete (Std): ${questionId}`); const eId=`error-${questionId}`; showError(eId,null,"Saved answers cannot be deleted.");setTimeout(()=>hideError(eId),3000);return; }
+             const user = getCurrentUser(); if (!user?.email) return;
+             const eId=`error-${questionId}`; const sId=`save-status-${questionId}`; const sEl=document.getElementById(sId);
+             hideError(eId); field.value=''; if(sEl)sEl.style.display='none';
+             deleteAnswerFromStorage(user.email, questionId);
              field.classList.remove('required-field'); updateStickyProgressBar();
-             const buttonGroup = field.closest('.question-item')?.querySelector('.answer-buttons');
-             if(buttonGroup){ buttonGroup.style.display = 'flex'; const saveButton = buttonGroup.querySelector('.save-button'); const deleteButton = buttonGroup.querySelector('.delete-button'); if(saveButton) saveButton.disabled = false; if(deleteButton) deleteButton.disabled = false; }
+             const btns = field.closest('.question-item')?.querySelector('.answer-buttons');
+             if(btns){btns.style.display='flex'; const sv=btns.querySelector('.save-btn');const dl=btns.querySelector('.delete-btn'); if(sv)sv.disabled=false;if(dl)dl.disabled=false;}
          };
 
-        // --- Actions (Save, Delete for Combined Skill/Will Rows) ---
-        window.saveCombinedAnswer = async function(rowIdentifier) {
+        window.saveTableRow = async function(rowIdentifier) {
             if (!supabase) { alert('Database connection error.'); return; }
             const currentUser = getCurrentUser(); if (!currentUser?.email || !currentUser.id) { alert('Session expired.'); return; }
 
             const rowNum = rowIdentifier.match(/(\d+)$/)?.[1]; if (!rowNum) return;
             const nameId = `team-member${rowNum}`; const mapId = `coaching-map${rowNum}`;
-            const errorId = `error-${rowIdentifier}`;
+            const errorId = `error-${rowIdentifier}`; // Error for the whole row
             const nameField = document.getElementById(nameId);
             const mapField = document.getElementById(mapId);
-            const buttonGroup = nameField?.closest('td')?.nextElementSibling?.querySelector('.answer-buttons'); 
+            const buttonGroup = nameField?.closest('tr')?.querySelector('.answer-buttons');
             const saveButton = buttonGroup?.querySelector('.save-btn');
             const deleteButton = buttonGroup?.querySelector('.delete-btn');
-            const statusElement = document.getElementById(`save-status-${rowIdentifier}`); 
+            const statusElement = document.getElementById(`save-status-${rowIdentifier}`);
 
-            if (!nameField || !mapField || !buttonGroup || !saveButton || !deleteButton) { console.error(`Save Error: Row elements missing for ${rowIdentifier}`); return; }
-            if (nameField.disabled || mapField.disabled) { console.warn('Row already saved:', rowIdentifier); return; }
+            if (!nameField || !mapField || !buttonGroup || !saveButton || !deleteButton) { console.error(`Save Error (Table): Elements missing for ${rowIdentifier}`); return; }
+            
+            // Allow saving even if one field is already disabled (saved) but the other is not
+            const nameDisabled = nameField.disabled;
+            const mapDisabled = mapField.disabled;
+
+            if (nameDisabled && mapDisabled) { console.warn('Entire row already saved:', rowIdentifier); return; }
 
             const nameVal = nameField.value; 
             const mapVal = mapField.value;
             const trimmedNameVal = nameVal.trim();
             const trimmedMapVal = mapVal.trim();
 
-
-            hideError(errorId); nameField.classList.remove('required-field'); mapField.classList.remove('required-field');
-            if (statusElement) statusElement.style.display = 'none'; 
+            hideError(errorId); 
+            nameField.classList.remove('required-field'); mapField.classList.remove('required-field');
+            if (statusElement) statusElement.style.display = 'none';
 
             let rowValid = true; let focusField = null;
-            if (!trimmedNameVal && trimmedMapVal) { rowValid = false; showError(errorId, null, 'Name required.'); nameField.classList.add('required-field'); focusField = nameField; }
-            else if (trimmedNameVal && !trimmedMapVal) { rowValid = false; showError(errorId, null, 'Quadrant required.'); mapField.classList.add('required-field'); focusField = mapField; }
-            else if (!trimmedNameVal && !trimmedMapVal) { rowValid = false; showError(errorId, null, 'Both Name and Quadrant required.'); nameField.classList.add('required-field'); mapField.classList.add('required-field'); focusField = nameField; }
-
+            if (!trimmedNameVal) { rowValid = false; if(!nameDisabled) {showError(errorId, null, 'Name required.'); nameField.classList.add('required-field'); focusField = nameField;} }
+            if (!trimmedMapVal) { rowValid = false; if(!mapDisabled) {showError(errorId, null, (focusField ? 'Also, Q' : 'Q') + 'uadrant required.'); mapField.classList.add('required-field'); if(!focusField) focusField = mapField;} }
+            
             if (!rowValid) { if(focusField) setTimeout(()=>focusField.focus({preventScroll:true}),100); updateStickyProgressBar(); return; }
 
             saveButton.disabled = true; saveButton.textContent = 'Saving...'; deleteButton.disabled = true;
 
             try {
-                 const submissionTime = new Date().toISOString();
-                 const sectionTypeForRow = 'table_row'; // Specific type for table rows
+                let results = [];
+                if (!nameDisabled && trimmedNameVal) { // Save name if not already disabled and has value
+                    const nameRes = await _saveIndividualAnswer(currentUser, nameId, `Skill/Will - Member (Row ${rowNum})`, nameVal, 'table_row_text', true);
+                    if (nameRes.error) throw new Error(`Supabase error (Name): ${nameRes.error.message}`);
+                    results.push(nameRes.data);
+                    saveAnswerToStorage(currentUser.email, nameId, nameVal);
+                    nameField.disabled = true; nameField.classList.remove('required-field');
+                }
+                if (!mapDisabled && trimmedMapVal) { // Save map if not already disabled and has value
+                    const mapRes = await _saveIndividualAnswer(currentUser, mapId, `Skill/Will - Quadrant (Row ${rowNum})`, mapVal, 'table_row_select', true);
+                    if (mapRes.error) throw new Error(`Supabase error (Map): ${mapRes.error.message}`);
+                    results.push(mapRes.data);
+                    saveAnswerToStorage(currentUser.email, mapId, mapVal);
+                    mapField.disabled = true; mapField.classList.remove('required-field');
+                }
+                
+                console.log("Supabase table row parts upsert successful:", results);
 
-                 const namePayload = { 
-                     user_id: currentUser.id, email: currentUser.email, question_id: nameId, 
-                     question_text: `Skill/Will - Member (Row ${rowNum})`, answer: nameVal, page: PAGE_NAME, 
-                     status: 'completed', submitted_at: submissionTime, updated_at: submissionTime, 
-                     section_type: sectionTypeForRow, 
-                     section_id: 'skill-will-table', 
-                     section_title: 'Skill/Will Matrix', 
-                     progress_percentage: 100, // Number
-                     score: 0, // Number
-                     is_passed: null // Table rows don't use the length check for is_passed
-                    };
-                 const mapPayload = { 
-                     user_id: currentUser.id, email: currentUser.email, question_id: mapId, 
-                     question_text: `Skill/Will - Quadrant (Row ${rowNum})`, answer: mapVal, page: PAGE_NAME, 
-                     status: 'completed', submitted_at: submissionTime, updated_at: submissionTime, 
-                     section_type: sectionTypeForRow, 
-                     section_id: 'skill-will-table', 
-                     section_title: 'Skill/Will Matrix', 
-                     progress_percentage: 100, // Number
-                     score: 0, // Number
-                     is_passed: null // Table rows don't use the length check for is_passed
-                    };
-
-                 console.log("Payload for table row (Name) to Supabase:", namePayload); // Diagnostic log
-                 console.log("Payload for table row (Map) to Supabase:", mapPayload); // Diagnostic log
-
-                 const [nameResult, mapResult] = await Promise.all([
-                      supabase.from('user_progress').upsert([namePayload], { onConflict: ['user_id', 'question_id'] }).select(),
-                      supabase.from('user_progress').upsert([mapPayload], { onConflict: ['user_id', 'question_id'] }).select()
-                  ]);
-                 if (nameResult.error || mapResult.error) {
-                     console.error('Supabase upsert error for table row:', nameResult.error || mapResult.error);
-                     throw new Error(`Supabase error saving row: ${nameResult.error?.message || mapResult.error?.message}`);
-                 }
-                 console.log("Supabase row upsert successful.");
-
-                 nameField.disabled = true; mapField.disabled = true;
-                 buttonGroup.style.display = 'none'; 
-                 if (statusElement) { statusElement.textContent = 'Row Saved ✅'; statusElement.style.display = 'inline-block'; } 
-                 saveAnswerToStorage(currentUser.email, nameId, nameVal);
-                 saveAnswerToStorage(currentUser.email, mapId, mapVal);
-                 updateStickyProgressBar(); 
+                // If both are now disabled (i.e., saved)
+                if (nameField.disabled && mapField.disabled) {
+                    buttonGroup.style.display = 'none'; 
+                    if (statusElement) { statusElement.textContent = 'Row Saved ✅'; statusElement.style.display = 'inline-block'; }
+                } else { // Should not happen if logic is correct, but as a fallback
+                    saveButton.disabled = false; saveButton.textContent = 'Save Row';
+                    deleteButton.disabled = false; deleteButton.style.display = 'inline-block';
+                }
+                updateStickyProgressBar();
 
              } catch(error) {
-                 // Error already logged
+                 console.error(`Failed to save row ${rowIdentifier}:`, error);
                  showError(errorId, null, `Save failed. Check console.`);
-                 buttonGroup.style.display = 'flex'; 
+                 // Re-enable buttons and only fields that were not already disabled
                  saveButton.disabled = false; saveButton.textContent = 'Save Row';
                  deleteButton.disabled = false; deleteButton.style.display = 'inline-block';
-                 nameField.disabled = false; mapField.disabled = false; 
+                 if (!nameDisabled) nameField.disabled = false; 
+                 if (!mapDisabled) mapField.disabled = false;  
                  if (statusElement) statusElement.style.display = 'none';
                  updateStickyProgressBar();
              }
         };
 
-        window.deleteCombinedAnswer = function(rowIdentifier) {
+        window.deleteTableRow = function(rowIdentifier) {
             const rowNum = rowIdentifier.match(/(\d+)$/)?.[1]; if (!rowNum) return;
-             const nameId = `team-member${rowNum}`; const mapId = `coaching-map${rowNum}`;
-             const errorId = `error-${rowIdentifier}`;
-             const nameField = document.getElementById(nameId); const mapField = document.getElementById(mapId);
-             const statusElement = document.getElementById(`save-status-${rowIdentifier}`);
+            const nameId = `team-member${rowNum}`; const mapId = `coaching-map${rowNum}`;
+            const errorId = `error-${rowIdentifier}`;
+            const nameField = document.getElementById(nameId); const mapField = document.getElementById(mapId);
+            const statusElement = document.getElementById(`save-status-${rowIdentifier}`);
 
-             if (!nameField || !mapField || nameField.disabled || mapField.disabled) { console.warn("Cannot delete saved row:", rowIdentifier); showError(errorId, null, "Saved rows cannot be deleted."); setTimeout(() => hideError(errorId), 3000); return; }
-             const currentUser = getCurrentUser(); if (!currentUser?.email) return;
+            const currentUser = getCurrentUser(); if (!currentUser?.email) return;
 
-             hideMessages(errorId, null); nameField.classList.remove('required-field'); mapField.classList.remove('required-field'); nameField.value=''; mapField.value='';
-             if(statusElement) statusElement.style.display = 'none';
+            // Allow deleting even if saved, will clear local and UI, and re-enable.
+            // Actual DB deletion is a separate concern if needed.
+            
+            hideError(errorId); 
+            if (nameField) { nameField.classList.remove('required-field'); nameField.value=''; nameField.disabled = false; }
+            if (mapField) { mapField.classList.remove('required-field'); mapField.value=''; mapField.disabled = false; }
+            if(statusElement) statusElement.style.display = 'none';
 
-             deleteAnswerFromStorage(currentUser.email,nameId); deleteAnswerFromStorage(currentUser.email,mapId);
-             console.log("Cleared unsaved answer locally for row", rowIdentifier);
+            deleteAnswerFromStorage(currentUser.email, nameId); 
+            deleteAnswerFromStorage(currentUser.email, mapId);
+            console.log("Cleared local answers for table row", rowIdentifier);
 
-             updateStickyProgressBar(); 
-             const buttonGroup = nameField.closest('td')?.nextElementSibling?.querySelector('.answer-buttons');
-             if(buttonGroup) { buttonGroup.style.display = 'flex'; const saveButton = buttonGroup.querySelector('.save-btn'); const deleteButton = buttonGroup.querySelector('.delete-btn'); if(saveButton) saveButton.disabled = false; if(deleteButton) deleteButton.disabled = false;}
+            updateStickyProgressBar(); 
+            const buttonGroup = nameField?.closest('tr')?.querySelector('.answer-buttons');
+            if(buttonGroup) { 
+                buttonGroup.style.display = 'flex'; 
+                const saveButton = buttonGroup.querySelector('.save-btn'); 
+                const deleteButton = buttonGroup.querySelector('.delete-btn'); 
+                if(saveButton) {saveButton.disabled = false; saveButton.textContent = 'Save Row';}
+                if(deleteButton) {deleteButton.disabled = false; deleteButton.textContent = 'Delete Row';}
+            }
         };
 
-
-        // --- Sticky Progress Bar Function ---
         function updateStickyProgressBar() {
             const currentUser = getCurrentUser(); if (!currentUser?.email) return;
-            let allAnswers = {}; try { const d = localStorage.getItem(localStorageKey); if (d) allAnswers = JSON.parse(d) || {}; } catch (e) { console.error("Progress LS Error:", e); return; }
-            const userAnswers = allAnswers[currentUser.email] || {};
+            let allUserPageAnswers = {}; try { const d = localStorage.getItem(localStorageKey); if (d) allUserPageAnswers = JSON.parse(d) || {}; } catch (e) { return; }
+            const userAnswers = allUserPageAnswers[currentUser.email] || {};
 
-            let answeredRequiredCount = 0;
-            // Count standard required questions saved
-            requiredQuestionIds.forEach(qId => {
-                if (userAnswers[qId] !== undefined && userAnswers[qId] !== null && String(userAnswers[qId]).trim() !== '') {
-                    answeredRequiredCount++;
-                }
+            let answeredStdCount = 0;
+            requiredStandardQuestionIds.forEach(qId => {
+                if (userAnswers[qId]?.trim()) answeredStdCount++;
             });
 
-            // Check if Skill/Will table requirement is met
-            const tableRequirementMet = checkSkillWillCompletion() ? 1 : 0;
+            const tableRowsCompleted = countCompletedTableRows(userAnswers);
+            const tableRequirementMet = tableRowsCompleted >= REQUIRED_TABLE_ROWS ? 1 : 0;
+            
+            // Total items for progress: standard questions + 1 for the table block (met if 3 rows are complete)
+            const totalProgressItems = requiredStandardQuestionIds.length + 1;
+            const completedProgressItems = answeredStdCount + tableRequirementMet;
 
-            const totalRequirements = requiredQuestionIds.length + 1; // +1 for the table requirement
-            const totalAnswered = answeredRequiredCount + tableRequirementMet;
-            const percentage = Math.round((totalAnswered / totalRequirements) * 100);
+            const percentage = totalProgressItems > 0 ? Math.round((completedProgressItems / totalProgressItems) * 100) : 0;
 
-            // Update UI
-            const barElement = document.getElementById('sticky-progress-bar');
-            const textElement = document.getElementById('sticky-progress-text');
-            if (barElement && textElement) {
-                barElement.style.width = `${percentage}%`;
-                textElement.textContent = `Progress: ${percentage}%`;
-            }
+            const barEl = document.getElementById('sticky-progress-bar');
+            const textEl = document.getElementById('sticky-progress-text');
+            if (barEl && textEl) { barEl.style.width = `${percentage}%`; textEl.textContent = `Progress: ${percentage}%`; }
 
-            // Update overall user progress
             if (!currentUser.progress) currentUser.progress = {};
             currentUser.progress[SECTION_ID] = percentage;
             saveCurrentUser(currentUser);
-             console.log(`Sticky Progress Updated: ${percentage}% (${totalAnswered}/${totalRequirements})`);
+             console.log(`Sticky Progress: ${percentage}% (${completedProgressItems}/${totalProgressItems}). Table rows completed: ${tableRowsCompleted}`);
+        }
+        
+        function countCompletedTableRows(userAnswers) {
+            let completedRows = 0;
+            for (let i = 1; i <= 6; i++) {
+                const nameVal = userAnswers[`team-member${i}`]?.trim();
+                const mapVal = userAnswers[`coaching-map${i}`]?.trim();
+                if (nameVal && mapVal) completedRows++;
+            }
+            return completedRows;
         }
 
-        // Helper to check skill/will completion based on localStorage
-        function checkSkillWillCompletion() {
+        function checkSkillWillTableCompletion() {
              const currentUser = getCurrentUser(); if (!currentUser?.email) return false;
-             let allAnswers = {}; try { const d = localStorage.getItem(localStorageKey); if (d) allAnswers = JSON.parse(d) || {}; } catch (e) { return false; }
-             const userAnswers = allAnswers[currentUser.email] || {};
-             let completedRowCount = 0;
-             for (let i = 1; i <= 6; i++) {
-                 const nameVal = userAnswers[`team-member${i}`]?.trim(); // Use ID as key
-                 const mapVal = userAnswers[`coaching-map${i}`]?.trim(); // Use ID as key
-                 if (nameVal && mapVal) { completedRowCount++; }
-             }
-             return completedRowCount >= REQUIRED_TABLE_ROWS;
+             let allUserPageAnswers = {}; try { const d = localStorage.getItem(localStorageKey); if (d) allUserPageAnswers = JSON.parse(d) || {}; } catch (e) { return false; }
+             const userAnswers = allUserPageAnswers[currentUser.email] || {};
+             return countCompletedTableRows(userAnswers) >= REQUIRED_TABLE_ROWS;
          }
 
     </script>
