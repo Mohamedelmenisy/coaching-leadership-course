@@ -1,3 +1,5 @@
+--- START OF FILE الببل.txt ---
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -796,7 +798,7 @@
             if (field.disabled) { console.warn(`Attempted save on disabled field: ${questionId}.`); return; }
 
             const answer = field.value; 
-            const trimmedAnswer = String(answer).trim(); // Get trimmed answer
+            const trimmedAnswer = String(answer).trim(); 
             const isRequired = field.classList.contains('required-answer');
             hideMessages(statusId, errorId, field); 
             if (isRequired && trimmedAnswer === '') {
@@ -826,7 +828,7 @@
                  }
 
                 const submissionTime = new Date().toISOString();
-                const sectionTypeForPayload = 'action_plan'; // Defined for this page
+                const sectionTypeForPayload = 'action_plan'; // This page is 'action_plan', not 'article'
 
                 const userProgressPayload = {
                     user_id: currentUser.id,
@@ -838,16 +840,18 @@
                     status: 'completed',
                     submitted_at: submissionTime,
                     updated_at: submissionTime,
-                    section_type: sectionTypeForPayload, // Using the variable
+                    section_type: sectionTypeForPayload, 
                     section_id: SECTION_ID,
                     section_title: document.title?.trim() || 'Coaching Action Plan',
-                    progress_percentage: 100, // For a single answer being saved, it's 100% "complete" for that item
-                    score: 0, // <<< MODIFIED: Explicitly set to 0 as requested
-                    is_passed: (sectionTypeForPayload === 'article' && trimmedAnswer.length >= 25) ? true : null // <<< MODIFIED as requested
-                               // Since sectionTypeForPayload is 'action_plan', this will evaluate to null
+                    progress_percentage: 100, 
+                    score: 0, // Explicitly set to 0 for all saves from this page
+                    is_passed: (sectionTypeForPayload === 'article' && trimmedAnswer.length >= 25) ? true : null 
+                               // This will be null because sectionTypeForPayload is 'action_plan'
                 };
 
-                console.log(`%c[${questionId}] Upserting Payload:`, "color: #888", userProgressPayload);
+                // Log the payload before sending to Supabase
+                console.log(`%c[${questionId}] UPSERTING Payload to Supabase:`, "color: #007bff; font-weight: bold;", userProgressPayload);
+
                 const { data, error } = await supabase.from('user_progress').upsert([userProgressPayload], { onConflict: ['user_id', 'question_id'] }).select();
                 if (error) throw new Error(`Supabase error: ${error.message} (Code: ${error.code})`);
                 console.log(`%c[${questionId}] Supabase upsert successful. Response:`, "color: green", data);
