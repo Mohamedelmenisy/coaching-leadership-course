@@ -796,10 +796,10 @@
             if (field.disabled) { console.warn(`Attempted save on disabled field: ${questionId}.`); return; }
 
             const answer = field.value; const trimmedAnswer = String(answer).trim(); const isRequired = field.classList.contains('required-answer');
-            hideMessages(statusId, errorId, field); 
+            hideMessages(statusId, errorId, field);
             if (isRequired && trimmedAnswer === '') {
-                showError(errorId, field, 'Required.'); 
-                updateStickyProgressBar(); 
+                showError(errorId, field, 'Required.');
+                updateStickyProgressBar();
                 return;
             }
 
@@ -811,7 +811,7 @@
                  const liElement = field.closest('li');
                  if (h4Element) {
                      questionText = h4Element.textContent.replace('*','').trim();
-                     if (liElement) { 
+                     if (liElement) {
                          questionText += ` (Item ${Array.from(liElement.parentNode.children).indexOf(liElement) + 1})`;
                      }
                  } else if (liElement) {
@@ -819,41 +819,41 @@
                       if(precedingSiblingText) {
                             questionText = precedingSiblingText.replace('*','').trim();
                       } else {
-                            questionText = `List item ${Array.from(liElement.parentNode.children).indexOf(liElement) + 1}`; 
+                            questionText = `List item ${Array.from(liElement.parentNode.children).indexOf(liElement) + 1}`;
                       }
                  }
 
                 const submissionTime = new Date().toISOString();
-                // MODIFIED PAYLOAD for score and is_passed and section_title
-                const currentScore = 0; // All questions here are textual
-                const isPassed = trimmedAnswer.length >= 25 ? true : null;
-                const pageTitle = document.title?.trim() || 'Coaching Action Plan';
+                // PAYLOAD with score and is_passed and section_title
+                const currentScore = 0; // All questions on this page are textual, so score is 0
+                const isPassed = trimmedAnswer.length >= 25 ? true : null; // Textual answer 'is_passed' logic
+                const pageTitle = document.title?.trim() || 'Coaching Action Plan'; // Get page title
 
-                const userProgressPayload = { 
-                    user_id: currentUser.id, 
-                    email: currentUser.email, 
-                    question_id: questionId, 
-                    question_text: questionText.substring(0, 250), 
-                    answer: answer, 
-                    page: PAGE_NAME, 
-                    status: 'completed', 
-                    submitted_at: submissionTime, 
-                    updated_at: submissionTime, 
-                    section_type: 'action_plan', // This page's specific section_type
-                    section_id: SECTION_ID, 
-                    section_title: pageTitle, // MODIFIED
-                    progress_percentage: 100, // Individual answer is 100% complete once saved
-                    score: currentScore, // MODIFIED
-                    is_passed: isPassed // MODIFIED
+                const userProgressPayload = {
+                    user_id: currentUser.id,
+                    email: currentUser.email,
+                    question_id: questionId,
+                    question_text: questionText.substring(0, 250),
+                    answer: answer,
+                    page: PAGE_NAME,
+                    status: 'completed',
+                    submitted_at: submissionTime,
+                    updated_at: submissionTime,
+                    section_type: 'action_plan', // Specific section_type for this page
+                    section_id: SECTION_ID,
+                    section_title: pageTitle, 
+                    progress_percentage: 100, 
+                    score: currentScore, // Score is 0 for text answers
+                    is_passed: isPassed 
                 };
 
-                console.log(`%c[${questionId}] Upserting Payload:`, "color: #888", userProgressPayload); // Existing console log, now shows new payload
+                console.log(`%c[${questionId}] Upserting Payload:`, "color: #888", userProgressPayload);
                 const { data, error } = await supabase.from('user_progress').upsert([userProgressPayload], { onConflict: ['user_id', 'question_id'] }).select();
                 if (error) throw new Error(`Supabase error: ${error.message} (Code: ${error.code})`);
                 console.log(`%c[${questionId}] Supabase upsert successful. Response:`, "color: green", data);
 
                 field.disabled = true; console.log(`%c[${questionId}] Field disabled.`, "color: blue");
-                field.classList.remove('required-field'); 
+                field.classList.remove('required-field');
                 if (buttonGroup) { buttonGroup.style.display = 'none'; console.log(`%c[${questionId}] Button group hidden.`, "color: blue"); } else { console.error(`%c[${questionId}] UI Update Error: Button group NOT found after save!`, "color: red; font-weight: bold;"); }
                 if (statusElement) { statusElement.textContent = 'Saved ✅'; statusElement.style.display = 'inline-block'; statusElement.classList.remove('deleted'); statusElement.style.color = '#27ae60'; console.log(`%c[${questionId}] Status element shown.`, "color: blue"); } else { console.warn(`%c[${questionId}] Status span #${statusId} not found.`, "color: orange"); }
 
@@ -863,15 +863,15 @@
                      console.error(`%c[${questionId}] FAILED to save answer to local storage after Supabase success!`, "color: red;");
                 }
 
-                updateStickyProgressBar(); 
+                updateStickyProgressBar();
                  console.log(`%c[${questionId}] Save process complete.`, "color: green; font-weight: bold;");
 
             } catch (error) {
                  console.error(`[${questionId}] CAUGHT ERROR during save:`, error); showError(errorId, field, `Save failed. Try again.`);
-                 field.disabled = false; 
+                 field.disabled = false;
                  if (buttonGroup) { buttonGroup.style.display = 'flex'; if (saveButton) { saveButton.disabled = false; saveButton.textContent = 'Save'; } if (deleteButton) { deleteButton.disabled = false; deleteButton.style.display = 'inline-block';} } else { console.error(`%c[${questionId}] Error Handling: Button group NOT found! Cannot re-enable buttons.`, "color: red;"); }
                  if (statusElement) statusElement.style.display = 'none';
-                 updateStickyProgressBar(); 
+                 updateStickyProgressBar();
             }
         };
 
@@ -883,10 +883,10 @@
                  const errorId=`error-${questionId}`;
                  const statusId=`save-status-${questionId}`;
                  const statusElement = document.getElementById(statusId);
-                  if (statusElement && statusElement.style.display !== 'none') { 
+                  if (statusElement && statusElement.style.display !== 'none') {
                       statusElement.textContent = 'Cannot delete saved answer.'; statusElement.style.color = '#e74c3c';
                       setTimeout(() => { statusElement.textContent = 'Saved ✅'; statusElement.style.color = '#27ae60'; }, 3000);
-                  } else { 
+                  } else {
                      showError(errorId, null, "Saved answers cannot be deleted."); setTimeout(()=>hideError(errorId),3000);
                   }
                  return;
@@ -903,14 +903,14 @@
              const saveButton = buttonGroup?.querySelector('.save-button');
              const deleteButton = buttonGroup?.querySelector('.delete-button');
 
-            hideMessages(statusId, errorId, field); 
-            field.value = (field.type === 'date' || field.tagName === 'SELECT') ? '' : ''; 
+            hideMessages(statusId, errorId, field);
+            field.value = (field.type === 'date' || field.tagName === 'SELECT') ? '' : '';
 
             deleteAnswerFromStorage(currentUser.email, questionId);
             console.log("Cleared unsaved/deleted answer locally for", questionId);
 
-            field.classList.remove('required-field'); 
-            if (statusElement) statusElement.style.display = 'none'; 
+            field.classList.remove('required-field');
+            if (statusElement) statusElement.style.display = 'none';
 
             if (buttonGroup) {
                  buttonGroup.style.display = 'flex';
@@ -920,7 +920,7 @@
                  console.error(`%c[${questionId}] Delete Handling: Button group NOT found! Cannot ensure buttons are active.`, "color: red;");
             }
 
-            updateStickyProgressBar(); 
+            updateStickyProgressBar();
         };
 
 
@@ -928,66 +928,65 @@
         function markPlanAsComplete(userEmail) {
             if (!userEmail) return;
             if (!validateAllAnswers(false)) {
-                showGeneralWarningMessage('Cannot complete: Missing required answers.'); 
-                 const generalWarningDiv = document.getElementById('generalInlineWarningMessage'); if(generalWarningDiv) { generalWarningDiv.textContent = 'Please complete all required fields before marking as complete.'; generalWarningDiv.style.display = 'block'; } 
+                showGeneralWarningMessage('Cannot complete: Missing required answers.');
+                 const generalWarningDiv = document.getElementById('generalInlineWarningMessage'); if(generalWarningDiv) { generalWarningDiv.textContent = 'Please complete all required fields before marking as complete.'; generalWarningDiv.style.display = 'block'; }
                 return;
             }
             const k = `${localStorageKey}_completed_${userEmail}`;
             console.log('AP: Marking complete with key:', k);
             try {
                 localStorage.setItem(k, 'true');
-                updateStickyProgressBar(); 
-                displayCompletionState(); 
+                updateStickyProgressBar();
+                displayCompletionState();
                 const cM = document.getElementById('completionMessage');
                 if (cM) {
                     cM.style.display = 'block';
                     cM.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
-                hideGeneralWarningMessage(); 
-                const generalWarningDiv = document.getElementById('generalInlineWarningMessage'); if (generalWarningDiv) generalWarningDiv.style.display = 'none'; 
-                logCompletionEvent(userEmail); 
+                hideGeneralWarningMessage();
+                const generalWarningDiv = document.getElementById('generalInlineWarningMessage'); if (generalWarningDiv) generalWarningDiv.style.display = 'none';
+                logCompletionEvent(userEmail);
             } catch (e) {
                 console.error("AP: Error saving completion status:", e);
                 alert("Could not save completion status. Please try again.");
             }
         }
 
-        async function logCompletionEvent(userEmail) { 
-            if (!supabase || !userEmail) return; 
-            const currentUser = getCurrentUser(); 
-            if (!currentUser || !currentUser.id) return; 
-            
-            console.log(`Logging completion event for ${userEmail} on ${PAGE_NAME}`); 
-            
-            // MODIFIED section_title for completion event
+        async function logCompletionEvent(userEmail) {
+            if (!supabase || !userEmail) return;
+            const currentUser = getCurrentUser();
+            if (!currentUser || !currentUser.id) return;
+
+            console.log(`Logging completion event for ${userEmail} on ${PAGE_NAME}`);
+
             const pageTitle = document.title?.trim() || 'Coaching Action Plan';
-            const completionPayload = { 
-                user_id: currentUser.id, 
-                email: userEmail, 
-                question_id: `${SECTION_ID}_completion_marker`, 
-                question_text: `Action Plan Marked Complete`, 
-                answer: 'Completed', 
-                page: PAGE_NAME, 
-                status: 'completed', 
-                submitted_at: new Date().toISOString(), 
-                updated_at: new Date().toISOString(), 
-                section_type: 'completion_status', 
-                section_id: SECTION_ID, 
-                section_title: pageTitle, // MODIFIED
-                progress_percentage: 100, 
-                score: null, // Score for completion marker is null
-                is_passed: true // is_passed for completion marker is true
+            const completionPayload = {
+                user_id: currentUser.id,
+                email: userEmail,
+                question_id: `${SECTION_ID}_completion_marker`,
+                question_text: `Action Plan Marked Complete`,
+                answer: 'Completed',
+                page: PAGE_NAME,
+                status: 'completed',
+                submitted_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                section_type: 'completion_status',
+                section_id: SECTION_ID,
+                section_title: pageTitle, 
+                progress_percentage: 100,
+                score: null, 
+                is_passed: true 
             };
 
-            console.log("Logging completion event payload:", completionPayload); // ADDED console.log for payload
+            console.log("Logging completion event payload:", completionPayload); 
 
-            try { 
-                const { error } = await supabase.from('user_progress').insert([completionPayload]); 
-                if (error) console.error("Error logging completion event:", error); 
-                else console.log("Completion event logged successfully."); 
-            } catch (e) { 
-                console.error("Exception logging completion event:", e); 
-            } 
+            try {
+                const { error } = await supabase.from('user_progress').insert([completionPayload]);
+                if (error) console.error("Error logging completion event:", error);
+                else console.log("Completion event logged successfully.");
+            } catch (e) {
+                console.error("Exception logging completion event:", e);
+            }
         }
 
         function checkCompletionState(userEmail) {
@@ -997,16 +996,16 @@
             const cM = document.getElementById('completionMessage');
             const cB = document.getElementById('completeButton');
             const bB = document.getElementById('backButton');
-            const generalWarningDiv = document.getElementById('generalInlineWarningMessage'); if (generalWarningDiv) generalWarningDiv.style.display = 'none'; 
+            const generalWarningDiv = document.getElementById('generalInlineWarningMessage'); if (generalWarningDiv) generalWarningDiv.style.display = 'none';
 
             if (isComplete) {
                 console.log("AP: Plan already marked complete. Displaying completed state.");
-                displayCompletionState(); 
+                displayCompletionState();
             } else {
                 console.log("AP: Plan not complete. Displaying active state.");
-                if (cM) cM.style.display = 'none'; 
-                if (cB) { cB.style.display = 'block'; cB.disabled = false; } 
-                if (bB) { bB.textContent = '← Back to Self Coaching'; bB.href = 'coaching-yourself.html'; } 
+                if (cM) cM.style.display = 'none';
+                if (cB) { cB.style.display = 'block'; cB.disabled = false; }
+                if (bB) { bB.textContent = '← Back to Self Coaching'; bB.href = 'coaching-yourself.html'; }
                  updateStickyProgressBar();
             }
         }
@@ -1017,12 +1016,12 @@
             const cB = document.getElementById('completeButton');
             const bB = document.getElementById('backButton');
             const generalWarningDiv = document.getElementById('generalInlineWarningMessage');
-            const container = document.querySelector('.container'); 
+            const container = document.querySelector('.container');
 
-            if (generalWarningDiv) generalWarningDiv.style.display = 'none'; 
-            if (cM) cM.style.display = 'block'; 
-            if (cB) { cB.style.display = 'none'; cB.disabled = true; } 
-            if (bB) { bB.textContent = '← Back to Dashboard'; bB.href = 'dashboard.html'; } 
+            if (generalWarningDiv) generalWarningDiv.style.display = 'none';
+            if (cM) cM.style.display = 'block';
+            if (cB) { cB.style.display = 'none'; cB.disabled = true; }
+            if (bB) { bB.textContent = '← Back to Dashboard'; bB.href = 'dashboard.html'; }
 
             if (container) {
                 container.querySelectorAll('.editable-answer[data-question]').forEach(field => {
@@ -1051,8 +1050,8 @@
                 console.error("AP: DisplayCompletionState Error - .container not found!");
             }
 
-            updateStickyProgressBar(); 
-            hideGeneralWarningMessage(); 
+            updateStickyProgressBar();
+            hideGeneralWarningMessage();
         }
     </script>
 
