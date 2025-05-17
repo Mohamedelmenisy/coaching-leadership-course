@@ -404,8 +404,8 @@
 
         // --- Configuration ---
         const localStorageKey = 'allUserAnswers_selfCoaching';
-        const SECTION_ID = 'self';
-        const PAGE_NAME = 'coaching-yourself.html';
+        const SECTION_ID = 'self'; // Unique identifier for this section
+        const PAGE_NAME = 'coaching-yourself.html'; // Current page name
 
         // --- Unified Keys ---
         const LOGGED_IN_KEY = 'isUserLoggedIn';
@@ -634,6 +634,7 @@
              const answer = field.value;
              const trimmedAnswer = answer.trim();
              const isRequired = field.classList.contains('required-answer');
+             const sectionType = 'article'; // For this page, all questions are article type
 
              hideMessages(statusId, errorId, field); // Clear errors and status initially
 
@@ -662,9 +663,41 @@
                  }
 
                  const submissionTime = new Date().toISOString();
-                 const userProgressPayload = { user_id: currentUser.id, email: currentUser.email, question_id: questionId, question_text: questionText, answer: answer, page: PAGE_NAME, status: 'completed', submitted_at: submissionTime, updated_at: submissionTime, section_type: 'article', section_id: SECTION_ID, section_title: document.title || 'Self Coaching', progress_percentage: 100, score: null, is_passed: null };
 
-                 console.log("Upserting to user_progress:", userProgressPayload);
+                 // --- Calculate score and is_passed based on your rules ---
+                 let score_value = 0; // Default for article
+                 let is_passed_value = null; // Default for article
+
+                 if (sectionType === 'article') {
+                    score_value = 0; // As per your rule for essay/text
+                    is_passed_value = (trimmedAnswer.length >= 25) ? true : null;
+                 }
+                 // else if (sectionType === 'mcq') {
+                 // This part would be for MCQ pages
+                 // const isCorrect = ... logic to check if MCQ answer is correct ...;
+                 // score_value = isCorrect ? 1 : 0;
+                 // is_passed_value = isCorrect;
+                 // }
+
+                 const userProgressPayload = {
+                    user_id: currentUser.id,
+                    email: currentUser.email,
+                    question_id: questionId,
+                    question_text: questionText,
+                    answer: answer, // Storing the original, non-trimmed answer
+                    page: PAGE_NAME,
+                    status: 'completed',
+                    submitted_at: submissionTime,
+                    updated_at: submissionTime,
+                    section_type: sectionType,
+                    section_id: SECTION_ID,
+                    section_title: document.title || 'Self Coaching',
+                    progress_percentage: 100, // For a single question save, it's 100% complete
+                    score: score_value,
+                    is_passed: is_passed_value
+                 };
+
+                 console.log("Upserting to user_progress with score/is_passed:", userProgressPayload); // User requested log
                  const { data, error } = await supabase.from('user_progress').upsert([userProgressPayload], { onConflict: ['user_id', 'question_id'] }).select();
                  if (error) throw new Error(`Supabase error: ${error.message}`);
                  console.log("Supabase upsert successful:", data);
