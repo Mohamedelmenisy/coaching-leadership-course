@@ -637,7 +637,7 @@
                      console.log(`Validation: Row ${rowId} counted as complete.`);
                 } else if (rowIsStartedOrSaved && !rowIsComplete) {
                      // Row was started/saved but is missing data. Mark the table requirement as NOT met.
-                     tableRequirementMet = false; // Might not meet the required count
+                     // tableRequirementMet = false; // Don't set this here, check count at the end
                      console.log(`Validation: Row ${rowId} is incomplete but was started/saved.`);
                      if (showErrors) {
                           showError(errorId, null, `Please fill all fields in this row.`);
@@ -661,19 +661,26 @@
                 console.log(`Validation ${tableType} Requirement FAILED: ${completedRowCount}/${requiredRowCount} completed rows.`);
                 if (showErrors) {
                     const message = `Please complete and save at least ${requiredRowCount} row(s).`;
-                    // Try to show the error near the first row's error span, or log if not found
                     const firstRowErrorId = `${tableType.replace('team','').toLowerCase()}-row-1`;
                     const firstRowErrorSpan = document.getElementById(`error-${firstRowErrorId}`);
 
-                    // Show the count error only if no *specific* field error was found *within this table*
-                    if (!firstErrorFieldInTable) {
+                    if (!firstErrorFieldInTable) { // Show general table error if no specific field was flagged
                         if (firstRowErrorSpan) {
                              showError(`error-${firstRowErrorId}`, null, message);
+                        } else if (tableCard) { // Fallback to show error on table card itself
+                            const genericErrorSpan = tableCard.querySelector('.inline-error-message') || document.createElement('span');
+                            if(!genericErrorSpan.id) { // If we created it, set it up
+                                genericErrorSpan.id = `error-generic-${tableType}`;
+                                genericErrorSpan.classList.add('inline-error-message');
+                                const pNote = tableCard.querySelector('p[style*="font-size: 0.9em"]');
+                                if (pNote) pNote.insertAdjacentElement('beforebegin', genericErrorSpan);
+                                else tableCard.appendChild(genericErrorSpan);
+                            }
+                            showError(genericErrorSpan.id, null, message);
                         } else {
-                             console.error(`Validation Error for ${tableType}: ${message}`); // Fallback log
+                             console.error(`Validation Error for ${tableType}: ${message}`);
                         }
-                        // If no specific field error, find the first *enabled* field to suggest focus
-                        if (tableCard) {
+                        if (tableCard && !firstErrorFieldInTable) { // Try to find a field to focus even for general table error
                             firstErrorFieldInTable = tableCard.querySelector('.editable-answer:not(:disabled)');
                         }
                     }
@@ -682,87 +689,71 @@
                  console.log(`Validation ${tableType} Requirement MET: ${completedRowCount}/${requiredRowCount} completed rows.`);
             }
 
-            // Pass the first error field found within this table back to the caller (validateAllAnswers)
-            // Use a temporary global variable (cleaned up by caller)
             if (firstErrorFieldInTable && !window.tempFirstErrorField) {
                  window.tempFirstErrorField = firstErrorFieldInTable;
              }
-
             return tableRequirementMet;
         }
 
         // Revised validateAllAnswers
         function validateAllAnswers(showErrors = false) {
             let allValid = true;
-            let firstInvalidField = null; // This will store the *overall* first field to focus
-            window.tempFirstErrorField = null; // Reset temp variable before checks
+            let firstInvalidField = null;
+            window.tempFirstErrorField = null;
 
             console.log(`%cRunning validation (Show Errors: ${showErrors})`, "color: orange;");
             hideWarningMessage();
 
-            // Check standard required textareas/inputs
             requiredQuestionIds.forEach(qId => {
                 const field = document.querySelector(`.required-answer[data-question="${qId}"]`);
                 if (field) {
                     const eId = `error-${qId}`;
                     hideError(eId); field.classList.remove('required-field');
-                    // Check if active and empty
-                    if (!field.disabled && field.value.trim() === '') {
+                    if (!field.disabled && field.value.trim() === '') { // Active and empty
                         allValid = false;
-                        if (showErrors) showError(eId, field, 'Required field.'); // Provide specific message
-                        if (!firstInvalidField) firstInvalidField = field; // Track first overall error
+                        if (showErrors) showError(eId, field, 'Required field.');
+                        if (!firstInvalidField) firstInvalidField = field;
                          console.log(`Validation Failed: Required field empty - ${qId}`);
-                    } else if (field.disabled) {
-                        // If disabled (saved), double-check local storage (optional, but robust)
+                    } else if (field.disabled) { // Saved, check local storage
                         const currentUser = getCurrentUser();
                         const userAnswers = currentUser ? JSON.parse(localStorage.getItem(localStorageKey) || '{}')[currentUser.email] : {};
                         if (!userAnswers?.[qId]?.trim()) {
-                             allValid = false; // Saved but empty - still invalid for requirement
-                             if (showErrors) showError(eId, field, 'Saved answer is empty.');
-                             if (!firstInvalidField) firstInvalidField = field;
+                             allValid = false;
+                             if (showErrors) showError(eId, null, 'Saved answer is empty.'); // Don't mark disabled field as required
+                             // No specific field to focus if it's disabled and empty
                               console.log(`Validation Failed: Saved field empty - ${qId}`);
                         }
                     }
                 } else {
                     console.warn(`Required field selector [data-question="${qId}"] not found!`);
-                    allValid = false; // Cannot validate if field is missing
+                    allValid = false;
                 }
             });
 
-            // Validate Tables
             if (!validateTableRows('teamRoles', ['member', 'role', 'strengths'], REQUIRED_TEAM_ROLES_ROWS, showErrors)) {
                 allValid = false;
-                // If table validation failed and set a temp field, and we don't have an overall first field yet, use the table's field.
-                if (window.tempFirstErrorField && !firstInvalidField) {
-                    firstInvalidField = window.tempFirstErrorField;
-                }
+                if (window.tempFirstErrorField && !firstInvalidField) firstInvalidField = window.tempFirstErrorField;
                  console.log(`Validation Failed: Team Roles table requirement not met.`);
             }
-            window.tempFirstErrorField = null; // Reset after first table check
+            window.tempFirstErrorField = null;
 
             if (!validateTableRows('teamCharter', ['name', 'responsibility', 'priority', 'outcome'], REQUIRED_TEAM_CHARTER_ROWS, showErrors)) {
                 allValid = false;
-                 if (window.tempFirstErrorField && !firstInvalidField) {
-                    firstInvalidField = window.tempFirstErrorField;
-                }
+                 if (window.tempFirstErrorField && !firstInvalidField) firstInvalidField = window.tempFirstErrorField;
                  console.log(`Validation Failed: Team Charter table requirement not met.`);
             }
-            window.tempFirstErrorField = null; // Clean up fully
+            window.tempFirstErrorField = null;
 
-            // Scroll and Focus Logic
             if (!allValid && showErrors) {
-                showGeneralWarningMessage(); // Show the top warning bar
+                showGeneralWarningMessage();
                 if (firstInvalidField) {
                      console.log(`%cScrolling and focusing on first invalid field: ${firstInvalidField.id || firstInvalidField.dataset.question}`, "color: red;");
-                    // Scroll the first invalid field into view
                     firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    // Attempt to focus after scroll animation
                     setTimeout(() => {
                         try {
-                             // For disabled fields, focus cannot be set. Focus container?
                             if(firstInvalidField.disabled) {
                                 const container = firstInvalidField.closest('.question-item') || firstInvalidField.closest('tr');
-                                if(container) container.focus(); // Might not work well, but better than nothing
+                                if(container) container.focus();
                                  console.warn("Attempted to focus a disabled field, focusing container instead.");
                             } else {
                                 firstInvalidField.focus({ preventScroll: true });
@@ -770,32 +761,29 @@
                         } catch (focusError) {
                             console.warn("Could not focus element:", firstInvalidField, focusError);
                         }
-                    }, 350); // Adjust timeout if scroll animation is slow
+                    }, 350);
                 } else {
                      console.log("%cValidation failed, but no specific invalid field found to focus.", "color: red;");
-                     // Scroll to the top warning message as a fallback
                       const warningMsg = document.getElementById('generalWarningMessage');
                       if(warningMsg) warningMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             } else if (allValid) {
-                 hideWarningMessage(); // Ensure warning is hidden if everything is valid
+                 hideWarningMessage();
                  console.log("%cValidation Passed!", "color: green;");
             }
-
             return allValid;
         }
 
 
         function showGeneralWarningMessage(message = "Please complete all required fields and table rows.") { const w=document.getElementById('generalWarningMessage'); if(!w) return; w.innerHTML=`<strong>Action Required:</strong> ${message}`; w.style.animation='none'; void w.offsetWidth; w.style.display='block'; w.style.animation='slideDownFadeInWarn 0.4s ease-out'; clearTimeout(w.timer); w.timer=setTimeout(()=>{w.style.animation='fadeOutUpWarn 0.5s ease-out forwards'; setTimeout(()=>{if(w.style.animationName==='fadeOutUpWarn'){w.style.display='none'; w.style.animation='';}},500);},4000); }
         function hideWarningMessage() { const w=document.getElementById('generalWarningMessage'); if(w && w.style.display !== 'none'){ w.style.animation='fadeOutUpWarn 0.5s ease-out forwards'; setTimeout(()=>{if(w.style.animationName==='fadeOutUpWarn'){w.style.display='none'; w.style.animation='';}},500);}}
-        function showError(errorId, fieldToMark, message = 'Required field.') { // Renamed fieldToFocus -> fieldToMark
+        function showError(errorId, fieldToMark, message = 'Required field.') { 
             const e = document.getElementById(errorId);
             if (!e) { console.warn("Error span not found:", errorId); return; }
             e.textContent = message;
             const aC = e.closest('.action-card');
-            e.style.color = aC ? '#f8d7da' : '#e74c3c'; // Set color based on context
-            e.style.display = 'inline-block'; // Make error visible
-            // Mark the field only if it's provided and not disabled
+            e.style.color = aC ? '#f8d7da' : '#e74c3c'; 
+            e.style.display = 'inline-block'; 
             if (fieldToMark && !fieldToMark.disabled) {
                 fieldToMark.classList.add('required-field');
             }
@@ -809,7 +797,7 @@
             if (!supabase) { alert('Database connection error.'); return; }
             const currentUser = getCurrentUser(); if (!currentUser?.email || !currentUser.id) { alert('Session expired.'); return; }
             const field = document.querySelector(`[data-question="${questionId}"]`);
-             if (!field) { console.error(`Field not found for data-question="${questionId}"`); return; } 
+             if (!field) { console.error(`Field not found for data-question="${questionId}"`); return; }
             const questionContainer = field?.closest('.question-item');
             const errorId = `error-${questionId}`; const statusId = `save-status-${questionId}`;
             const statusElement = document.getElementById(statusId);
@@ -822,7 +810,7 @@
             const answer = field.value; const trimmedAnswer = answer.trim(); const isRequired = field.classList.contains('required-answer');
             hideMessages(errorId, field); if (statusElement) statusElement.style.display = 'none';
             if (isRequired && trimmedAnswer === '') {
-                showError(errorId, field, 'Required field cannot be empty.'); 
+                showError(errorId, field, 'Required field cannot be empty.');
                 updateStickyProgressBar(); return;
             }
 
@@ -832,27 +820,27 @@
                 const qTextElement = questionContainer.querySelector('.question-text');
                 const questionText = qTextElement ? qTextElement.textContent.replace('*','').trim() : 'Unknown Question Text';
                 const submissionTime = new Date().toISOString();
-                
-                const currentSectionType = 'article'; // All standalone textareas are 'article'
-                let score = 0; // Default for essay/textual
-                let is_passed = (trimmedAnswer.length >= 25) ? true : null;
 
-                const userProgressPayload = { 
-                    user_id: currentUser.id, 
-                    email: currentUser.email, 
-                    question_id: questionId, 
-                    question_text: questionText, 
-                    answer: answer, 
-                    page: PAGE_NAME, 
-                    status: 'completed', 
-                    submitted_at: submissionTime, 
-                    updated_at: submissionTime, 
-                    section_type: currentSectionType, 
+                const currentSectionType = 'article'; // All standalone textareas are 'article'
+                const score = 0; // Default for essay/textual
+                const is_passed = (trimmedAnswer.length >= 25) ? true : null;
+
+                const userProgressPayload = {
+                    user_id: currentUser.id,
+                    email: currentUser.email,
+                    question_id: questionId,
+                    question_text: questionText,
+                    answer: answer,
+                    page: PAGE_NAME,
+                    status: 'completed',
+                    submitted_at: submissionTime,
+                    updated_at: submissionTime,
+                    section_type: currentSectionType,
                     section_id: SECTION_ID, // Page-level section ID
-                    section_title: document.title || 'Team Coaching', 
-                    progress_percentage: 100, 
-                    score: score, 
-                    is_passed: is_passed 
+                    section_title: document.title || 'Team Coaching',
+                    progress_percentage: 100,
+                    score: score, // Corrected: Always 0 for text
+                    is_passed: is_passed // Corrected: Based on length
                 };
 
                 console.log("User Progress Payload (saveAnswer):", userProgressPayload);
@@ -874,14 +862,14 @@
                 buttonGroup.style.display = 'flex';
                 if(saveButton) { saveButton.disabled = false; saveButton.textContent = 'Save'; }
                 if(deleteButton) { deleteButton.disabled = false; deleteButton.style.display = 'inline-block';}
-                field.disabled = false; 
+                field.disabled = false;
                 if (statusElement) statusElement.style.display = 'none';
             }
         };
 
         window.deleteAnswer = function(questionId) {
              const field = document.querySelector(`[data-question="${questionId}"]`);
-              if (!field) { console.error(`Field not found for data-question="${questionId}"`); return; } 
+              if (!field) { console.error(`Field not found for data-question="${questionId}"`); return; }
 
              if (field.disabled) {
                  console.warn(`Cannot delete saved answer: ${questionId}.`);
@@ -892,27 +880,27 @@
                       statusElement.textContent = 'Cannot delete saved answer.';
                       statusElement.style.color = '#e74c3c';
                       setTimeout(() => {
-                           statusElement.textContent = 'Saved ✅'; 
+                           statusElement.textContent = 'Saved ✅';
                            statusElement.style.color = '#27ae60';
                       }, 3000);
                  } else {
                       showError(errorId, null, "Saved answers cannot be deleted.");
                       setTimeout(() => hideError(errorId), 3000);
                  }
-                 return; 
+                 return;
              }
 
              const currentUser = getCurrentUser(); if (!currentUser?.email) return;
              const errorId = `error-${questionId}`; const statusId = `save-status-${questionId}`; const statusElement = document.getElementById(statusId);
              hideMessages(errorId, field);
-             field.value = ''; 
+             field.value = '';
              if(statusElement) statusElement.style.display = 'none';
              console.log("Cleared unsaved answer locally for", questionId);
-             field.classList.remove('required-field'); 
-             updateStickyProgressBar(); 
+             field.classList.remove('required-field');
+             updateStickyProgressBar();
              const buttonGroup = field.closest('.question-item')?.querySelector('.answer-buttons');
              if(buttonGroup){
-                 buttonGroup.style.display = 'flex'; 
+                 buttonGroup.style.display = 'flex';
                  const saveButton = buttonGroup.querySelector('.save-btn');
                  const deleteButton = buttonGroup.querySelector('.delete-btn');
                  if(saveButton) saveButton.disabled = false;
@@ -922,7 +910,7 @@
 
 
         // --- Actions (Save, Delete for Table Rows) ---
-        window.saveTableRow = async function(rowId) { 
+        window.saveTableRow = async function(rowId) {
              if (!supabase) { alert('Database connection error.'); return; }
              const currentUser = getCurrentUser(); if (!currentUser?.email || !currentUser.id) { alert('Session expired.'); return; }
 
@@ -933,8 +921,8 @@
              const buttonGroup = rowElement.querySelector('.answer-buttons');
              const saveButton = buttonGroup?.querySelector('.save-btn');
              const deleteButton = buttonGroup?.querySelector('.delete-btn');
-             const statusElement = document.getElementById(`save-status-${rowId}`); 
-             const inputs = Array.from(rowElement.querySelectorAll('.editable-answer')); 
+             const statusElement = document.getElementById(`save-status-${rowId}`);
+             const inputs = Array.from(rowElement.querySelectorAll('.editable-answer'));
 
              if (!inputs.length || !saveButton || !deleteButton) { console.error('Elements missing in row:', rowId); return; }
 
@@ -948,18 +936,18 @@
              if (statusElement) statusElement.style.display = 'none';
 
              let rowValid = true; let rowStarted = false; let firstEmptyRequiredField = null;
-             const rowData = {}; 
+             const rowData = {};
              const isRolesTable = rowId.startsWith('roles');
              const tableIdentifier = isRolesTable ? 'Team Roles' : 'Team Charter';
              const tableSectionId = isRolesTable ? 'team-roles-table' : 'team-charter-table';
              const tableSectionTitle = isRolesTable ? document.querySelector('#teamRolesCard h3').textContent.replace('ACTION: ','').replace('*','').trim() : document.querySelector('#teamCharterCard h3').textContent.replace('ACTION: ','').replace('*','').trim();
 
              const rowNum = rowId.match(/(\d+)$/)[1];
-             const questionTexts = {}; 
+             const questionTexts = {};
 
              inputs.forEach(field => {
                  const fieldId = field.id; const value = field.value; const trimmedValue = value.trim();
-                 rowData[fieldId] = value; 
+                 rowData[fieldId] = value;
                  const label = field.closest('td')?.dataset.label;
                  questionTexts[fieldId] = `${tableIdentifier} - ${label || fieldId.replace(/\d+/,'')} (Row ${rowNum})`;
 
@@ -971,14 +959,14 @@
              });
 
              if (!rowStarted) {
-                  hideError(errorId); 
+                  hideError(errorId);
                   console.log("Save aborted: Row not started (all fields blank).", rowId);
                   return;
              }
              if (!rowValid) {
                   showError(errorId, null, 'Please fill all fields in this row.');
                   if (firstEmptyRequiredField) setTimeout(()=>firstEmptyRequiredField.focus({preventScroll:true}),100);
-                  updateStickyProgressBar(); 
+                  updateStickyProgressBar();
                   console.log("Save aborted: Row started but incomplete.", rowId);
                   return;
              }
@@ -988,42 +976,42 @@
              try {
                   const submissionTime = new Date().toISOString();
                   const payloads = [];
-                  let localSaveSuccess = true; 
+                  let localSaveSuccess = true;
 
                   for (const fieldId in rowData) {
-                      const field = document.getElementById(fieldId); // Get the field element
+                      const field = document.getElementById(fieldId);
                       const answerValue = rowData[fieldId];
                       const trimmedAnswerValue = answerValue.trim();
-                      
-                      let score_for_field = 0;
+
+                      const score_for_field = 0; // Always 0 for table fields (text, textarea, select)
                       let is_passed_for_field = null;
-                      const field_section_type = 'table_row'; // Explicitly table_row
+                      const field_section_type = 'table_row';
 
                       if (field.tagName === 'TEXTAREA' || field.type === 'text') {
                           is_passed_for_field = (trimmedAnswerValue.length >= 25) ? true : null;
                       } else if (field.tagName === 'SELECT') {
                           is_passed_for_field = (trimmedAnswerValue !== '') ? true : null;
                       }
-                      
-                      const payload = { 
-                          user_id: currentUser.id, 
-                          email: currentUser.email, 
-                          question_id: fieldId, 
-                          question_text: questionTexts[fieldId], 
-                          answer: answerValue, 
-                          page: PAGE_NAME, 
-                          status: 'completed', 
-                          submitted_at: submissionTime, 
-                          updated_at: submissionTime, 
-                          section_type: field_section_type, 
-                          section_id: tableSectionId, 
-                          section_title: tableSectionTitle, 
-                          progress_percentage: 100, 
-                          score: score_for_field, 
-                          is_passed: is_passed_for_field 
+
+                      const payload = {
+                          user_id: currentUser.id,
+                          email: currentUser.email,
+                          question_id: fieldId,
+                          question_text: questionTexts[fieldId],
+                          answer: answerValue,
+                          page: PAGE_NAME,
+                          status: 'completed',
+                          submitted_at: submissionTime,
+                          updated_at: submissionTime,
+                          section_type: field_section_type,
+                          section_id: tableSectionId,
+                          section_title: tableSectionTitle,
+                          progress_percentage: 100,
+                          score: score_for_field, // Corrected
+                          is_passed: is_passed_for_field // Corrected
                       };
                       payloads.push(payload);
-                      console.log("User Progress Payload (saveTableRow - Field: " + fieldId + "):", payload);
+                      console.log("User Progress Payload (saveTableRow - Field: " + fieldId + "):", payload); // Log individual field payload
 
                       if (!saveAnswerToStorage(currentUser.email, fieldId, answerValue)) {
                            localSaveSuccess = false;
@@ -1035,13 +1023,14 @@
                        console.warn("Continuing Supabase save despite local storage errors for row:", rowId);
                   }
 
+                  // console.log(`Upserting ${payloads.length} records for row ${rowId}:`, payloads); // Log combined payloads (optional as individual logged above)
                   const { data, error } = await supabase.from('user_progress').upsert(payloads, { onConflict: ['user_id', 'question_id'] }).select();
                   if (error) throw new Error(`Supabase error: ${error.message}`); console.log("Supabase row upsert successful:", data);
 
-                  inputs.forEach(input => { input.disabled = true; input.classList.remove('required-field'); }); 
-                  buttonGroup.style.display = 'none'; 
-                  if (statusElement) { statusElement.textContent = 'Row Saved ✅'; statusElement.style.display = 'inline-block'; } 
-                  updateStickyProgressBar(); 
+                  inputs.forEach(input => { input.disabled = true; input.classList.remove('required-field'); });
+                  buttonGroup.style.display = 'none';
+                  if (statusElement) { statusElement.textContent = 'Row Saved ✅'; statusElement.style.display = 'inline-block'; }
+                  updateStickyProgressBar();
 
               } catch(error) {
                   console.error(`Failed to save row ${rowId}:`, error);
@@ -1049,7 +1038,7 @@
                   buttonGroup.style.display = 'flex';
                   saveButton.disabled = false; saveButton.textContent = 'Save Row';
                   deleteButton.disabled = false; deleteButton.style.display = 'inline-block';
-                  inputs.forEach(input => input.disabled = false); 
+                  inputs.forEach(input => input.disabled = false);
                   if (statusElement) statusElement.style.display = 'none';
               }
          }
@@ -1065,39 +1054,39 @@
 
              if (isSaved) {
                  console.warn("Cannot delete saved row:", rowId);
-                 if (statusElement && statusElement.style.display !== 'none') { 
+                 if (statusElement && statusElement.style.display !== 'none') {
                       statusElement.textContent = 'Cannot delete saved row.';
                       statusElement.style.color = '#e74c3c';
                       setTimeout(() => {
-                           statusElement.textContent = 'Row Saved ✅'; 
-                           statusElement.style.color = '#27ae60'; 
+                           statusElement.textContent = 'Row Saved ✅';
+                           statusElement.style.color = '#27ae60';
                       }, 3000);
-                 } else { 
+                 } else {
                       showError(errorId, null, "Saved rows cannot be deleted.");
                       setTimeout(() => hideError(errorId), 3000);
                  }
-                 return; 
+                 return;
              }
 
-             const currentUser = getCurrentUser(); if (!currentUser?.email) return; 
-             hideMessages(errorId, null); 
-             if(statusElement) statusElement.style.display = 'none'; 
+             const currentUser = getCurrentUser(); if (!currentUser?.email) return;
+             hideMessages(errorId, null);
+             if(statusElement) statusElement.style.display = 'none';
 
              inputs.forEach(input => {
-                  input.value = (input.tagName === 'SELECT') ? '' : ''; 
-                  input.classList.remove('required-field'); 
+                  input.value = (input.tagName === 'SELECT') ? '' : '';
+                  input.classList.remove('required-field');
              });
              console.log("Cleared unsaved answer locally for row", rowId);
 
-             updateStickyProgressBar(); 
+             updateStickyProgressBar();
 
              const buttonGroup = rowElement.querySelector('.answer-buttons');
              if(buttonGroup) {
                  buttonGroup.style.display = 'flex';
                  const saveButton = buttonGroup.querySelector('.save-btn');
                  const deleteButton = buttonGroup.querySelector('.delete-btn');
-                 if(saveButton) saveButton.disabled = false; 
-                 if(deleteButton) deleteButton.disabled = false; 
+                 if(saveButton) saveButton.disabled = false;
+                 if(deleteButton) deleteButton.disabled = false;
              }
          }
 
@@ -1157,15 +1146,15 @@
              const prefixes = (tableType === 'teamRoles') ? ['member', 'role', 'strengths'] : ['name', 'responsibility', 'priority', 'outcome'];
 
              for (let i = 1; i <= maxRows; i++) {
-                 let rowIsCompleteAndSaved = true; 
-                 let rowWasStarted = false; 
+                 let rowIsCompleteAndSaved = true;
+                 let rowWasStarted = false;
 
                  for (const prefix of prefixes) {
                       const fieldId = `${prefix}${i}`;
-                      const savedValue = userAnswers[fieldId]; 
+                      const savedValue = userAnswers[fieldId];
 
                       if (savedValue !== undefined && savedValue !== null && String(savedValue).trim() !== '') {
-                           rowWasStarted = true; 
+                           rowWasStarted = true;
                       } else {
                            rowIsCompleteAndSaved = false;
                       }
