@@ -830,6 +830,9 @@
                 const submissionTime = new Date().toISOString();
                 const sectionTypeForPayload = 'action_plan'; // This page is 'action_plan', not 'article'
 
+                // <<< ADDED console.log for debugging is_passed condition
+                console.log(`%c[${questionId}] Checking is_passed condition: sectionTypeForPayload = '${sectionTypeForPayload}', trimmedAnswer.length = ${trimmedAnswer.length}`, "color: #DAA520;");
+
                 const userProgressPayload = {
                     user_id: currentUser.id,
                     email: currentUser.email,
@@ -844,12 +847,12 @@
                     section_id: SECTION_ID,
                     section_title: document.title?.trim() || 'Coaching Action Plan',
                     progress_percentage: 100, 
-                    score: 0, // Explicitly set to 0 for all saves from this page
+                    score: 0, // Explicitly set to 0
                     is_passed: (sectionTypeForPayload === 'article' && trimmedAnswer.length >= 25) ? true : null 
-                               // This will be null because sectionTypeForPayload is 'action_plan'
+                               // This line remains the same as per your confirmation.
+                               // It will evaluate to null because sectionTypeForPayload is 'action_plan'.
                 };
 
-                // Log the payload before sending to Supabase
                 console.log(`%c[${questionId}] UPSERTING Payload to Supabase:`, "color: #007bff; font-weight: bold;", userProgressPayload);
 
                 const { data, error } = await supabase.from('user_progress').upsert([userProgressPayload], { onConflict: ['user_id', 'question_id'] }).select();
