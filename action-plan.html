@@ -1,3 +1,5 @@
+--- START OF FILE الببل.txt ---
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -788,7 +790,6 @@
             const deleteButton = buttonGroup?.querySelector('.delete-button');
 
              if (!buttonGroup || !saveButton || !deleteButton) {
-                 // Log specific context to help debug
                 console.error(`Save Error: UI components missing for ${questionId}. Field:`, field, "Container:", container, "Found Button Group:", buttonGroup);
                 showError(errorId, field, 'Internal Error: UI component missing.');
                 return;
@@ -796,37 +797,39 @@
 
             if (field.disabled) { console.warn(`Attempted save on disabled field: ${questionId}.`); return; }
 
-            const answer = field.value; const trimmedAnswer = String(answer).trim(); const isRequired = field.classList.contains('required-answer');
-            hideMessages(statusId, errorId, field); // Hide status first, then potential errors
+            const answer = field.value; 
+            const trimmedAnswer = String(answer).trim(); // Get trimmed answer
+            const isRequired = field.classList.contains('required-answer');
+            hideMessages(statusId, errorId, field); 
             if (isRequired && trimmedAnswer === '') {
-                showError(errorId, field, 'Required.'); // Show error if required and empty
-                updateStickyProgressBar(); // Update progress based on current state
+                showError(errorId, field, 'Required.'); 
+                updateStickyProgressBar(); 
                 return;
             }
 
             saveButton.disabled = true; saveButton.textContent = 'Saving...'; deleteButton.disabled = true;
 
             try {
-                // Simplified Question Text Extraction
                 let questionText = `Answer for ${questionId}`;
                  const h4Element = field.closest('.question-box')?.querySelector('h4');
                  const liElement = field.closest('li');
                  if (h4Element) {
                      questionText = h4Element.textContent.replace('*','').trim();
-                     if (liElement) { // Append list item context if inside OL/UL
+                     if (liElement) { 
                          questionText += ` (Item ${Array.from(liElement.parentNode.children).indexOf(liElement) + 1})`;
                      }
                  } else if (liElement) {
-                      // Try to get text from preceding element if no h4 (might be simple label)
                      const precedingSiblingText = liElement.firstChild?.textContent?.trim();
                       if(precedingSiblingText) {
                             questionText = precedingSiblingText.replace('*','').trim();
                       } else {
-                            questionText = `List item ${Array.from(liElement.parentNode.children).indexOf(liElement) + 1}`; // Fallback
+                            questionText = `List item ${Array.from(liElement.parentNode.children).indexOf(liElement) + 1}`; 
                       }
                  }
 
                 const submissionTime = new Date().toISOString();
+                const sectionTypeForPayload = 'action_plan'; // Defined for this page
+
                 const userProgressPayload = {
                     user_id: currentUser.id,
                     email: currentUser.email,
@@ -837,12 +840,13 @@
                     status: 'completed',
                     submitted_at: submissionTime,
                     updated_at: submissionTime,
-                    section_type: 'action_plan',
+                    section_type: sectionTypeForPayload, // Using the variable
                     section_id: SECTION_ID,
                     section_title: document.title?.trim() || 'Coaching Action Plan',
-                    progress_percentage: 100,
-                    score: 0, // Explicitly set to 0 for textual answers
-                    is_passed: true // Mark as true as this part of action plan is "completed" by answering
+                    progress_percentage: 100, // For a single answer being saved, it's 100% "complete" for that item
+                    score: 0, // <<< MODIFIED: Explicitly set to 0 as requested
+                    is_passed: (sectionTypeForPayload === 'article' && trimmedAnswer.length >= 25) ? true : null // <<< MODIFIED as requested
+                               // Since sectionTypeForPayload is 'action_plan', this will evaluate to null
                 };
 
                 console.log(`%c[${questionId}] Upserting Payload:`, "color: #888", userProgressPayload);
@@ -850,29 +854,26 @@
                 if (error) throw new Error(`Supabase error: ${error.message} (Code: ${error.code})`);
                 console.log(`%c[${questionId}] Supabase upsert successful. Response:`, "color: green", data);
 
-                // UI Update AFTER successful save
                 field.disabled = true; console.log(`%c[${questionId}] Field disabled.`, "color: blue");
-                field.classList.remove('required-field'); // Remove error class if present
+                field.classList.remove('required-field'); 
                 if (buttonGroup) { buttonGroup.style.display = 'none'; console.log(`%c[${questionId}] Button group hidden.`, "color: blue"); } else { console.error(`%c[${questionId}] UI Update Error: Button group NOT found after save!`, "color: red; font-weight: bold;"); }
                 if (statusElement) { statusElement.textContent = 'Saved ✅'; statusElement.style.display = 'inline-block'; statusElement.classList.remove('deleted'); statusElement.style.color = '#27ae60'; console.log(`%c[${questionId}] Status element shown.`, "color: blue"); } else { console.warn(`%c[${questionId}] Status span #${statusId} not found.`, "color: orange"); }
 
-                // Save to local storage AFTER Supabase success and UI update
                 if (saveAnswerToStorage(currentUser.email, questionId, answer)) {
                      console.log(`%c[${questionId}] Answer saved to local storage.`, "color: blue");
                 } else {
                      console.error(`%c[${questionId}] FAILED to save answer to local storage after Supabase success!`, "color: red;");
-                     // Consider notifying the user or attempting retry?
                 }
 
-                updateStickyProgressBar(); // Update progress after successful save
+                updateStickyProgressBar(); 
                  console.log(`%c[${questionId}] Save process complete.`, "color: green; font-weight: bold;");
 
             } catch (error) {
                  console.error(`[${questionId}] CAUGHT ERROR during save:`, error); showError(errorId, field, `Save failed. Try again.`);
-                 field.disabled = false; // Re-enable field on error
+                 field.disabled = false; 
                  if (buttonGroup) { buttonGroup.style.display = 'flex'; if (saveButton) { saveButton.disabled = false; saveButton.textContent = 'Save'; } if (deleteButton) { deleteButton.disabled = false; deleteButton.style.display = 'inline-block';} } else { console.error(`%c[${questionId}] Error Handling: Button group NOT found! Cannot re-enable buttons.`, "color: red;"); }
                  if (statusElement) statusElement.style.display = 'none';
-                 updateStickyProgressBar(); // Update progress based on current (failed) state
+                 updateStickyProgressBar(); 
             }
         };
 
