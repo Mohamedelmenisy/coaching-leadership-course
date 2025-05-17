@@ -833,9 +833,8 @@
                 const questionText = qTextElement ? qTextElement.textContent.replace('*','').trim() : 'Unknown Question Text';
                 const submissionTime = new Date().toISOString();
                 
-                // ADDED: Calculate score and is_passed
-                const currentScore = 0; // Textual question, score is 0
-                const currentIsPassed = (trimmedAnswer.length >= 25) ? true : null; // For 'article' type
+                const currentScore = 0; 
+                const currentIsPassed = (trimmedAnswer.length >= 25) ? true : null; 
 
                 const userProgressPayload = {
                     user_id: currentUser.id,
@@ -847,14 +846,16 @@
                     status: 'completed',
                     submitted_at: submissionTime,
                     updated_at: submissionTime,
-                    section_type: 'article', // As per existing logic for this page
-                    section_id: SECTION_ID,    // 'team'
-                    progress_percentage: 100,  // As per existing logic
-                    score: currentScore,       // ADDED
-                    is_passed: currentIsPassed // ADDED
+                    section_type: 'article', 
+                    section_id: SECTION_ID,
+                    // MODIFICATION START
+                    section_title: document.title?.trim() || 'Team Section',
+                    // MODIFICATION END
+                    progress_percentage: 100, 
+                    score: currentScore,       
+                    is_passed: currentIsPassed 
                 };
 
-                // MODIFIED: Updated console log message for clarity
                 console.log("User Progress Payload (saveAnswer):", userProgressPayload);
                 const { data, error } = await supabase.from('user_progress').upsert([userProgressPayload], { onConflict: ['user_id', 'question_id'] }).select();
                 if (error) throw new Error(`Supabase error: ${error.message}`); console.log("Supabase upsert successful:", data);
@@ -992,30 +993,32 @@
 
                   for (const fieldId in rowData) {
                       const currentAnswer = rowData[fieldId];
-                      const trimmedCurrentAnswer = String(currentAnswer).trim(); // ADDED: Ensure string conversion for trim
+                      const trimmedCurrentAnswer = String(currentAnswer).trim(); 
 
-                      // ADDED: Calculate score and is_passed for each field
-                      const currentScore = 0; // Textual input, score is 0
-                      const currentIsPassed = (trimmedCurrentAnswer.length >= 25) ? true : null; // For 'article' type
+                      const currentScore = 0; 
+                      const currentIsPassed = (trimmedCurrentAnswer.length >= 25) ? true : null; 
 
                       payloads.push({
                           user_id: currentUser.id,
                           email: currentUser.email,
                           question_id: fieldId,
                           question_text: questionTexts[fieldId],
-                          answer: currentAnswer, // Use original answer
+                          answer: currentAnswer, 
                           page: PAGE_NAME,
                           status: 'completed',
                           submitted_at: submissionTime,
                           updated_at: submissionTime,
-                          section_type: 'article', // As per existing logic
-                          section_id: SECTION_ID,    // 'team'
-                          progress_percentage: 100,  // As per existing logic
-                          score: currentScore,       // ADDED
-                          is_passed: currentIsPassed // ADDED
+                          section_type: 'article', 
+                          section_id: SECTION_ID,   
+                          // MODIFICATION START
+                          section_title: document.title?.trim() || 'Team Section',
+                          // MODIFICATION END
+                          progress_percentage: 100,  
+                          score: currentScore,       
+                          is_passed: currentIsPassed 
                       });
                       
-                      if (!saveAnswerToStorage(currentUser.email, fieldId, currentAnswer)) { // MODIFIED: use currentAnswer
+                      if (!saveAnswerToStorage(currentUser.email, fieldId, currentAnswer)) { 
                            localSaveSuccess = false;
                            console.error("Local storage save FAILED for field:", fieldId);
                       }
@@ -1025,7 +1028,7 @@
                        console.warn("Continuing Supabase save despite local storage errors for row:", rowId);
                   }
 
-                  console.log(`Upserting ${payloads.length} records for row ${rowId}:`, payloads); // This log will now show new fields
+                  console.log(`Upserting ${payloads.length} records for row ${rowId}:`, payloads); 
                   const { data, error } = await supabase.from('user_progress').upsert(payloads, { onConflict: ['user_id', 'question_id'] }).select();
                   if (error) throw new Error(`Supabase error: ${error.message}`); console.log("Supabase row upsert successful:", data);
 
